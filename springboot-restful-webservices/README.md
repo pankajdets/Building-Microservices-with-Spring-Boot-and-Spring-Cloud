@@ -136,6 +136,29 @@ Create Controller package and then create UserController class
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
+
+**Buid Get All User REST API**
+**Service**
+    Add List<User> getAllUsers();  in UserService interface
+    Implement  getAllUsers()method in UserServiceImpl class
+
+        @Override
+        public List<User> getAllUsers() {
+            List<User> users = userRepository.findAll();
+            return users;
+        }
+**Controller**
+
+    //build get all users REST API
+    //http://localhost:8080/api/users
+    @GetMapping
+    public ResponseEntity<List<User>> getAllusers(){
+        List<User> users = userService.getAllUsers();
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+
+
     
 
 
