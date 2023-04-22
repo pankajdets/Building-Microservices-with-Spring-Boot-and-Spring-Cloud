@@ -184,6 +184,28 @@ Create Controller package and then create UserController class
                 return new ResponseEntity<User>(updatedUser, HttpStatus.OK);
             }
 
+
+**Build Delete User REST API**
+
+**Service**
+    Add void deleteUser(Long userId);  in UserService interface
+    Implement deleteUser(Long userId) method in UserServiceImpl class
+
+        @Override
+        public void deleteUser(Long userId) {
+        userRepository.deleteById(userId);
+        }
+
+**Controller**
+
+    //build delete user REST API
+    //http://localhost:8080/api/users/1
+    @DeleteMapping("{id}")
+    public ResponseEntity<String> deleteuser(@PathVariable("id") Long userId){
+        userService.deleteUser(userId);
+        return new ResponseEntity<String>("user Successfully deleted", HttpStatus.OK);
+    }
+
     
 
 
