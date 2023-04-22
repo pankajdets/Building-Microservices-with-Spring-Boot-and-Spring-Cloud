@@ -22,6 +22,8 @@ Another benefit is the encapsulation of the serialization's logic (the mechanism
 DTOs normally are created as POJOs. They are flat data structures that contain no business logic. They only contain storage, accessors and eventually methods related to serialization or parsing.
 The data is mapped from the domain models to the DTOs, normally through a mapper component in the presentation or facade layer.
 
+![image](https://user-images.githubusercontent.com/42623098/233796989-0ebed01b-0e71-489d-a125-c6168fcac0d5.png)
+
 
 4. When to Use It?
 DTOs come in handy in systems with remote calls, as they help to reduce the number of them.
