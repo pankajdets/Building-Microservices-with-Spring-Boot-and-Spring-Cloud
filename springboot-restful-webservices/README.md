@@ -157,7 +157,32 @@ Create Controller package and then create UserController class
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
+** BUILD UPDATE USER REST API**
+**Service**
+    Add User updateUser(User user);  in UserService interface
+    Implement updateUser(User user) method in UserServiceImpl class
 
+        @Override
+        public User updateUser(User user) {
+        User existingUser = userRepository.findById(user.getId()).get();
+        existingUser.setFirstName(user.getFirstName());
+        existingUser.setLastName(user.getLastName());
+        existingUser.setEmail(user.getEmail();
+        User updatedUser = userRepository.save(existingUser);
+        return updatedUser;
+        }
+
+
+**Controller**
+
+            //build update user REST API
+            //http://localhost:8080/api/users/1
+            @PutMapping("{id}")
+            public ResponseEntity<User> updateUSer(@PathVariable("{id}") Long userId, @RequestBody User user){
+                user.setId(userId);
+                User updatedUser = userService.updateUser(user);
+                return new ResponseEntity<User>(updatedUser, HttpStatus.OK);
+            }
 
     
 
