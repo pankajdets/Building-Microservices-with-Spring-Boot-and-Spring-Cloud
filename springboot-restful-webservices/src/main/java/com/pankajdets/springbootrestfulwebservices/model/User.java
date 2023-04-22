@@ -1,4 +1,4 @@
-package com.pankajdets.springootrestfulwebservices.model;
+package com.pankajdets.springbootrestfulwebservices.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

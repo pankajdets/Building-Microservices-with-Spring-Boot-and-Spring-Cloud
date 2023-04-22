@@ -1,4 +1,4 @@
-package com.pankajdets.springootrestfulwebservices.controller;
+package com.pankajdets.springbootrestfulwebservices.controller;
 
 import java.util.List;
 
@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.pankajdets.springootrestfulwebservices.model.User;
-import com.pankajdets.springootrestfulwebservices.service.UserService;
+import com.pankajdets.springbootrestfulwebservices.model.User;
+import com.pankajdets.springbootrestfulwebservices.service.UserService;
 
 import lombok.AllArgsConstructor;
 
@@ -31,7 +31,7 @@ public class UserController {
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user){
         User savedUser = userService.createUser(user);
-        return new ResponseEntity<User>(savedUser, HttpStatus.CREATED);
+        return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }
 
     //build get user by id REST API

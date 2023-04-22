@@ -1,13 +1,13 @@
-package com.pankajdets.springootrestfulwebservices.service.impl;
+package com.pankajdets.springbootrestfulwebservices.service.impl;
 
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.pankajdets.springootrestfulwebservices.model.User;
-import com.pankajdets.springootrestfulwebservices.repository.UserRepository;
-import com.pankajdets.springootrestfulwebservices.service.UserService;
+import com.pankajdets.springbootrestfulwebservices.model.User;
+import com.pankajdets.springbootrestfulwebservices.repository.UserRepository;
+import com.pankajdets.springbootrestfulwebservices.service.UserService;
 
 import lombok.AllArgsConstructor;
 
@@ -21,8 +21,8 @@ public class UserServiceImpl implements UserService {
     // Here we have UserServiceImpl is spring bean having single parameterize constructor for userRepository
     @Override
     public User createUser(User user) {
-        
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        return savedUser;       
     }
 
     @Override

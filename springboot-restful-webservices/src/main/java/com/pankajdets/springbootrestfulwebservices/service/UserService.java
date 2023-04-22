@@ -1,8 +1,8 @@
-package com.pankajdets.springootrestfulwebservices.service;
+package com.pankajdets.springbootrestfulwebservices.service;
 
 import java.util.List;
 
-import com.pankajdets.springootrestfulwebservices.model.User;
+import com.pankajdets.springbootrestfulwebservices.model.User;
 
 public interface UserService {
     User createUser(User user);
