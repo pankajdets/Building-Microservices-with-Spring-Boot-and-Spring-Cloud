@@ -115,3 +115,27 @@ Create Controller package and then create UserController class
             
         }
 
+**Build Get User By ID REST API**
+**Service**
+    Add User getUserById(Long userId);  in UserService interface
+    Implement getUserById(Long userId) method in UserServiceImpl class
+
+        @Override
+        public User getUserById(Long userId) {
+            Optional<User> optionalUser =userRepository.findById(userId);
+            return optionalUser.get();
+        }
+
+**Controller**
+
+    //build get user by id REST API
+    //http://localhost:8080/api/users/1
+    @GetMapping("{id}")
+    public ResponseEntity<User> getUserById(@PathVariable("id") Long userId){
+        User user = userService.getUserById(userId);
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    
+
+
