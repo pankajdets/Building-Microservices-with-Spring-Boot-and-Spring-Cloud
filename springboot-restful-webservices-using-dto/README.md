@@ -42,3 +42,187 @@ With DTOs, we can build different views from our domain models, allowing us to c
 6. Refactor Update User REST API to use DTO
 7. Refactor Delete User REST API to use DTO
 
+**1.Create UserDto Class**
+    Create dto package
+    Create UserDto class
+        //Don't include sensitive information in User DTO
+        //Beacuse We don't want to send sensitive information to client
+        @Setter
+        @Getter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public class UserDto {
+            private Long id;
+            private String firstName;
+            private String lastName;
+            private String email;
+        }
+
+**2. Refactor Create User REST API to use DTO**
+
+**Service**
+
+Change function declarion in UserService interface
+
+        UserDto createUser(UserDto userDto);
+
+Update createUser() method in UserServiceImpl class
+
+        @Override
+            public UserDto createUser(UserDto userDto) {
+                //conver UserDto to User JPA Entity
+                //Because we need to save user JPA Entity to database
+                User user = new User(
+                userDto.getId(),
+                userDto.getFirstName(),
+                userDto.getLastName(),
+                userDto.getEmail()  
+                );
+
+                User savedUser = userRepository.save(user);
+
+                //covert User JPA Entity savedUser to UserDto object
+                UserDto savedUserDto = new UserDto(
+                    savedUser.getId(),
+                    savedUser.getFirstName(),
+                    savedUser.getLastName(),
+                    savedUser.getEmail()
+                    );
+                return savedUserDto;       
+            }
+
+**Controller**
+Update createUser POST API in controller
+
+    //build Create User REST API
+    @PostMapping
+    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto){
+        UserDto savedUserDto = userService.createUser(userDto);
+        return new ResponseEntity<>(savedUserDto, HttpStatus.CREATED);
+    }
+
+
+**Create UserMapper Class**
+//To conver User JPA Entity to UserDto and vice versa
+Create Mapper directoty
+Create UserMapper class and and two static methods 1. UserDto mapToUserDto(User user) 2. User mapToUser(UserDto userDto)
+
+        public class UserMapper {
+
+            //Convert User JPA Entity to UserDto
+            public static UserDto mapToUserDto(User user){
+                UserDto userDto = new UserDto(
+                    user.getId(),
+                    user.getFirstName(),
+                    user.getLastName(),
+                    user.getEmail()
+                    );
+                return userDto;
+            }
+
+            // convert UserDto to User JPA Entity
+            public static User mapToUser(UserDto userDto){
+                User user = new User(
+                    userDto.getId(),
+                    userDto.getFirstName(),
+                    userDto.getLastName(),
+                    userDto.getEmail()
+                );
+
+                return user;
+            }
+            
+        }
+
+Now update createUser() in UserServiceImpl class as below to User mapper methods
+
+        @Override
+            public UserDto createUser(UserDto userDto) {
+                //conver UserDto to User JPA Entity
+                //Because we need to save user JPA Entity to database
+                User user = UserMapper.mapToUser(userDto);
+
+                User savedUser = userRepository.save(user);
+
+                //covert User JPA Entity savedUser to UserDto object
+                UserDto savedUserDto = UserMapper.mapToUserDto(savedUser);
+                return savedUserDto;       
+            }
+
+
+**Refactor Get User By Id REST API to use DTO**
+
+**Service**
+update method prototype in UserService interface
+        UserDto getUserById(Long userId);
+update getUserById() method definition in UserServiceImpl class
+        @Override
+        public UserDto getUserById(Long userId) {
+            Optional<User> optionalUser =userRepository.findById(userId);
+
+            User user = optionalUser.get();
+            return UserMapper.mapToUserDto(user);
+        }
+
+**Controller**
+update getUserById() in UserController class
+
+            //build get user by id REST API
+            //http://localhost:8080/api/users/1
+            @GetMapping("{id}")
+            public ResponseEntity<UserDto> getUserById(@PathVariable("id") Long userId){
+                UserDto userDto = userService.getUserById(userId);
+                return new ResponseEntity<>(userDto, HttpStatus.OK);
+            }
+
+**Refactor Get ALL User REST API to use DTO**
+**Service**
+update prototype of method getAllUsers() in UserService interface
+        List<UserDto> getAllUsers();
+update function defenition of getAllUsers() in UserServiceImpl class
+            @Override
+            public List<UserDto> getAllUsers() {
+                List<User> users = userRepository.findAll();
+                return users.stream().map(UserMapper :: mapToUserDto).collect(Collectors.toList());
+            }
+
+**Controller**
+            //build get all users REST API
+            //http://localhost:8080/api/users
+            @GetMapping
+            public ResponseEntity<List<UserDto>> getAllusers(){
+                List<UserDto> usersDto = userService.getAllUsers();
+                return new ResponseEntity<>(usersDto, HttpStatus.OK);
+            }
+
+**Refactor Update User REST API to use DTO**
+**Service**
+update function prototype in userService interface
+        UserDto updateUser(UserDto userDto);
+update function definition in userServiceImpl class
+        @Override
+        public UserDto updateUser(UserDto userDto) {
+        User existingUser = userRepository.findById(userDto.getId()).get();
+        existingUser.setFirstName(userDto.getFirstName());
+        existingUser.setLastName(userDto.getLastName());
+        existingUser.setEmail(userDto.getEmail());
+        User updatedUser = userRepository.save(existingUser);
+        return UserMapper.mapToUserDto(updatedUser);
+        }
+**Controller**
+
+        //build update user REST API
+        //http://localhost:8080/api/users/1
+        @PutMapping("{id}")
+        public ResponseEntity<UserDto> updateUSer(@PathVariable("id") Long userId, @RequestBody UserDto userDto){
+            userDto.setId(userId);
+            UserDto updatedUserDto = userService.updateUser(userDto);
+            return new ResponseEntity<>(updatedUserDto, HttpStatus.OK);
+        }
+
+
+**Refactor Delete User REST API to use DTO**
+
+Haven't use User JPA Entity object hence no need to refector
+
+

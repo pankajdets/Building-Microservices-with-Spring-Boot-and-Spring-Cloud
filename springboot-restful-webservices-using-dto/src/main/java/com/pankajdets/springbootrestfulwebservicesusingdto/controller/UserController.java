@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pankajdets.springbootrestfulwebservicesusingdto.dto.UserDto;
 import com.pankajdets.springbootrestfulwebservicesusingdto.model.User;
 import com.pankajdets.springbootrestfulwebservicesusingdto.service.UserService;
 
@@ -29,35 +30,35 @@ public class UserController {
     
     //build Create User REST API
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user){
-        User savedUser = userService.createUser(user);
-        return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
+    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto){
+        UserDto savedUserDto = userService.createUser(userDto);
+        return new ResponseEntity<>(savedUserDto, HttpStatus.CREATED);
     }
 
     //build get user by id REST API
     //http://localhost:8080/api/users/1
     @GetMapping("{id}")
-    public ResponseEntity<User> getUserById(@PathVariable("id") Long userId){
-        User user = userService.getUserById(userId);
-        return new ResponseEntity<>(user, HttpStatus.OK);
+    public ResponseEntity<UserDto> getUserById(@PathVariable("id") Long userId){
+        UserDto userDto = userService.getUserById(userId);
+        return new ResponseEntity<>(userDto, HttpStatus.OK);
     }
 
 
     //build get all users REST API
     //http://localhost:8080/api/users
     @GetMapping
-    public ResponseEntity<List<User>> getAllusers(){
-        List<User> users = userService.getAllUsers();
-        return new ResponseEntity<>(users, HttpStatus.OK);
+    public ResponseEntity<List<UserDto>> getAllusers(){
+        List<UserDto> usersDto = userService.getAllUsers();
+        return new ResponseEntity<>(usersDto, HttpStatus.OK);
     }
 
     //build update user REST API
      //http://localhost:8080/api/users/1
     @PutMapping("{id}")
-    public ResponseEntity<User> updateUSer(@PathVariable("id") Long userId, @RequestBody User user){
-        user.setId(userId);
-        User updatedUser = userService.updateUser(user);
-        return new ResponseEntity<User>(updatedUser, HttpStatus.OK);
+    public ResponseEntity<UserDto> updateUSer(@PathVariable("id") Long userId, @RequestBody UserDto userDto){
+        userDto.setId(userId);
+        UserDto updatedUserDto = userService.updateUser(userDto);
+        return new ResponseEntity<>(updatedUserDto, HttpStatus.OK);
     }
 
     //build delete user REST API
