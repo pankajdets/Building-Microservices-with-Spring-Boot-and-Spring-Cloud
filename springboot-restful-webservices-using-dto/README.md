@@ -513,3 +513,258 @@ step 3: User AutoUserMapper in UserServiceImpl class
 
 
 
+                    **Exception Handling in Spring Boot Application**
+
+**Spring Boot Default Error Handling Overview**
+
+
+**Spring Boot REST API Exception Handling Overview**
+
+**Create And Use ResourceNotFound Custom Exception**
+    Requirement
+
+
+    Create exception package
+    Create ResourceNotFoundException.java class
+
+            
+        @ResponseStatus(value = HttpStatus.NOT_FOUND) // To return HttpStatus code
+        public class ResourceNotFoundException extends RuntimeException{
+            private String resourceName;
+            private String fieldName;
+            private Long fieldValue;
+
+            public ResourceNotFoundException(String resourceName, String fieldName, Long fieldValue){
+                super(String.format("%s not found with %s : '%s'", resourceName, fieldName, fieldValue));
+                this.resourceName = resourceName;
+                this.fieldName = fieldName;
+                this.fieldValue = fieldValue;
+            }
+        }
+
+    Refactor UserServiceImpl methods to user Custom Exception (ResourceNotFoundException)
+
+        @Service
+        @AllArgsConstructor //to create constructor  for userRepository instance variable 
+        public class UserServiceImpl implements UserService {
+
+            private UserRepository userRepository;// Constructor based dependency injection to inject userRepository in UserServiceImpl class
+            //typically we need to @Autowired annotation to inject the dependency
+            // But spring 4.3 onwards whenever there is a spring bean with single parameterize constructor, We can omit @Autowired annotation
+            // Here we have UserServiceImpl is spring bean having single parameterize constructor for userRepository
+            
+            private ModelMapper modelMapper; // Constructor based dependency injection to inject ModelMapper object  in UserServiceImpl class
+            //@Autowired is not required as there is single parameterize constructor @AllArgsConstructor 
+
+            @Override
+            public UserDto createUser(UserDto userDto) {
+                //conver UserDto to User JPA Entity
+                //Because we need to save user JPA Entity to database
+                //User user = UserMapper.mapToUser(userDto);
+                //User user = modelMapper.map(userDto, User.class);
+
+                User user = AutoUserMapper.MAPPER.mapToUser(userDto);
+                User savedUser = userRepository.save(user);
+
+                //covert User JPA Entity savedUser to UserDto object
+                //UserDto savedUserDto = UserMapper.mapToUserDto(savedUser);
+                //UserDto savedUserDto = modelMapper.map(savedUser, UserDto.class);
+
+                UserDto savedUserDto = AutoUserMapper.MAPPER.mapToUserDto(savedUser);
+
+                return savedUserDto;       
+            }
+
+            @Override
+            public UserDto getUserById(Long userId) {
+                User user = userRepository.findById(userId).orElseThrow(
+                        () -> new ResourceNotFoundException("User", "id", userId)
+                );
+
+                //return UserMapper.mapToUserDto(user);
+                //return modelMapper.map(user, UserDto.class);
+                return AutoUserMapper.MAPPER.mapToUserDto(user);
+            }
+
+            @Override
+            public List<UserDto> getAllUsers() {
+                List<User> users = userRepository.findAll();
+                //return users.stream().map(UserMapper :: mapToUserDto).collect(Collectors.toList());
+                //return users.stream().map((user)->modelMapper.map(user, UserDto.class)).collect(Collectors.toList());
+                return users.stream().map((user)->AutoUserMapper.MAPPER.mapToUserDto(user)).collect(Collectors.toList());
+            }
+
+            @Override
+            public UserDto updateUser(UserDto userDto) {
+            User existingUser = userRepository.findById(userDto.getId()).orElseThrow(
+                    () -> new ResourceNotFoundException("User", "id", userDto.getId())
+            );
+            existingUser.setFirstName(userDto.getFirstName());
+            existingUser.setLastName(userDto.getLastName());
+            existingUser.setEmail(userDto.getEmail());
+            User updatedUser = userRepository.save(existingUser);
+            //return UserMapper.mapToUserDto(updatedUser);
+            //return modelMapper.map(updatedUser, UserDto.class);
+            return AutoUserMapper.MAPPER.mapToUserDto(updatedUser);
+            }
+
+            @Override
+            public void deleteUser(Long userId) {
+
+                User existingUser = userRepository.findById(userId).orElseThrow(
+                    () -> new ResourceNotFoundException("User", "id", userId)
+            );
+
+            userRepository.deleteById(userId);
+            }
+
+            
+            
+        }
+
+We were using Spring Boot default execution handler
+
+
+**Create Error Details Class to hold the custom Error Response**
+    Create ErrorDetails class in exception package
+
+        @Getter
+        @Setter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public class ErrorDetails {
+            private LocalDateTime timestamp;
+            private String message;
+            private String path;
+            private String errorCode;
+            
+        }
+    
+    Create GlobalExceptionHandler class to handle specific and global exceptions
+
+    **At Controller level**
+
+            @ExceptionHandler(ResourceNotFoundException.class) // To handle Specific Exception and return custom Error Response back to client
+            public ResponseEntity<ErrorDetails> handleResourceNotFoundException(ResourceNotFoundException exception,
+                                                                            WebRequest webRequest){
+
+            ErrorDetails errorDetails = new ErrorDetails(
+                    LocalDateTime.now(),
+                    exception.getMessage(),
+                    webRequest.getDescription(false),
+                    "USER_NOT_FOUND"
+            );
+
+            return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
+        }
+
+Or we can create GlobalExceptionHandler class in exception package
+
+         @ControllerAdvice //To handle the Exception Globally 
+        //Means we use his annotation to handle all the specific exception and as well as global exception in single place
+        public class GlobalExceptionHandler {
+
+            @ExceptionHandler(ResourceNotFoundException.class) // To handle Specific Exception and return custom Error Response back to client
+            public ResponseEntity<ErrorDetails> handleResourceNotFoundException(ResourceNotFoundException exception,
+                                                                            WebRequest webRequest){
+
+            ErrorDetails errorDetails = new ErrorDetails(
+                    LocalDateTime.now(),
+                    exception.getMessage(),
+                    webRequest.getDescription(false),
+                    "USER_NOT_FOUND"
+            );
+
+            return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
+        }
+            
+        }
+
+
+**Requirement 2**
+**If User email already exists in the database then we need to to throw exception with proper error message and status code**
+
+    Create  EmailAlreadyExistsException class by extending RuntimeException
+
+        @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+        public class EmailAlreadyExistsException extends RuntimeException {
+            private String message;
+
+            public EmailAlreadyExistsException(String message){
+                super(message);
+            }
+            
+        }
+
+    Add query mehod proptotype in UserRepository to find User by email
+
+        public interface UserRepository extends JpaRepository<User, Long> {
+            
+            Optional<User> findByEmail(String email);
+        }
+
+    
+    Refactor createUser() method in UserServiceImpl class to throw exception if User email already exists in Database
+
+            @Override
+            public UserDto createUser(UserDto userDto) {
+                //conver UserDto to User JPA Entity
+                //Because we need to save user JPA Entity to database
+                //User user = UserMapper.mapToUser(userDto);
+                //User user = modelMapper.map(userDto, User.class);
+
+                Optional<User> optionalUser = userRepository.findByEmail(userDto.getEmail());
+                if(optionalUser.isPresent()){
+                    throw new EmailAlreadyExistsException("Email Already Exists for User");
+                }
+
+                User user = AutoUserMapper.MAPPER.mapToUser(userDto);
+                User savedUser = userRepository.save(user);
+
+                //covert User JPA Entity savedUser to UserDto object
+                //UserDto savedUserDto = UserMapper.mapToUserDto(savedUser);
+                //UserDto savedUserDto = modelMapper.map(savedUser, UserDto.class);
+                
+                UserDto savedUserDto = AutoUserMapper.MAPPER.mapToUserDto(savedUser);
+
+                return savedUserDto;       
+            }
+
+    Add handler method handleEmailAlreadyExistsException() in GlobalExceptionHandler class
+
+        @ExceptionHandler(EmailAlreadyExistsException.class) // To handle Specific Exception and return custom Error Response back to client
+        public ResponseEntity<ErrorDetails> handleEmailAlreadyExistsException(EmailAlreadyExistsException exception,
+                                                                            WebRequest webRequest){
+
+            ErrorDetails errorDetails = new ErrorDetails(
+                    LocalDateTime.now(),
+                    exception.getMessage(),
+                    webRequest.getDescription(false),
+                    "USER_EMAIL_ALREADY_EXISTS"
+            );
+
+            return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+        }
+
+
+**Spring Boot REST API Global Exception Handling**
+
+    Add Global Exception Handler in GlobalExceptionHandler class. It will handle all other excpetion apart from that two custom exception
+
+    
+        //Global Exception Handler
+        @ExceptionHandler(Exception.class) // To handle Specific Exception and return custom Error Response back to client
+        public ResponseEntity<ErrorDetails> handleGlobalException(Exception exception,
+                                                                            WebRequest webRequest){
+
+            ErrorDetails errorDetails = new ErrorDetails(
+                    LocalDateTime.now(),
+                    exception.getMessage(),
+                    webRequest.getDescription(false),
+                    "INTERNAL SERVER ERROR"
+            );
+
+            return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        

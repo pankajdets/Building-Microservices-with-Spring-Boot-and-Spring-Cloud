@@ -1,10 +1,12 @@
 package com.pankajdets.springbootrestfulwebservicesusingdto.controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,8 +14,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.WebRequest;
 
 import com.pankajdets.springbootrestfulwebservicesusingdto.dto.UserDto;
+import com.pankajdets.springbootrestfulwebservicesusingdto.exception.ErrorDetails;
+import com.pankajdets.springbootrestfulwebservicesusingdto.exception.ResourceNotFoundException;
 import com.pankajdets.springbootrestfulwebservicesusingdto.model.User;
 import com.pankajdets.springbootrestfulwebservicesusingdto.service.UserService;
 
@@ -68,5 +73,19 @@ public class UserController {
         userService.deleteUser(userId);
         return new ResponseEntity<String>("user Successfully deleted", HttpStatus.OK);
     }
+
+//     @ExceptionHandler(ResourceNotFoundException.class) // To handle Specific Exception and return custom Error Response back to client
+//     public ResponseEntity<ErrorDetails> handleResourceNotFoundException(ResourceNotFoundException exception,
+//                                                                        WebRequest webRequest){
+
+//        ErrorDetails errorDetails = new ErrorDetails(
+//                LocalDateTime.now(),
+//                exception.getMessage(),
+//                webRequest.getDescription(false),
+//                "USER_NOT_FOUND"
+//        );
+
+//        return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
+//    }
 }
 

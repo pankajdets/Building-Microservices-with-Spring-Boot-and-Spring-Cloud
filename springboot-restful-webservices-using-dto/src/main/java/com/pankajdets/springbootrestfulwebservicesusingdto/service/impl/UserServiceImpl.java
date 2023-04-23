@@ -9,6 +9,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import com.pankajdets.springbootrestfulwebservicesusingdto.dto.UserDto;
+import com.pankajdets.springbootrestfulwebservicesusingdto.exception.EmailAlreadyExistsException;
+import com.pankajdets.springbootrestfulwebservicesusingdto.exception.ResourceNotFoundException;
 import com.pankajdets.springbootrestfulwebservicesusingdto.mapper.AutoUserMapper;
 import com.pankajdets.springbootrestfulwebservicesusingdto.mapper.UserMapper;
 import com.pankajdets.springbootrestfulwebservicesusingdto.model.User;
@@ -36,13 +38,18 @@ public class UserServiceImpl implements UserService {
         //User user = UserMapper.mapToUser(userDto);
         //User user = modelMapper.map(userDto, User.class);
 
+        Optional<User> optionalUser = userRepository.findByEmail(userDto.getEmail());
+        if(optionalUser.isPresent()){
+            throw new EmailAlreadyExistsException("Email Already Exists for User");
+        }
+
         User user = AutoUserMapper.MAPPER.mapToUser(userDto);
         User savedUser = userRepository.save(user);
 
         //covert User JPA Entity savedUser to UserDto object
         //UserDto savedUserDto = UserMapper.mapToUserDto(savedUser);
         //UserDto savedUserDto = modelMapper.map(savedUser, UserDto.class);
-
+        
         UserDto savedUserDto = AutoUserMapper.MAPPER.mapToUserDto(savedUser);
 
         return savedUserDto;       
@@ -50,9 +57,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUserById(Long userId) {
-        Optional<User> optionalUser =userRepository.findById(userId);
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new ResourceNotFoundException("User", "id", userId)
+        );
 
-         User user = optionalUser.get();
          //return UserMapper.mapToUserDto(user);
          //return modelMapper.map(user, UserDto.class);
          return AutoUserMapper.MAPPER.mapToUserDto(user);
@@ -68,7 +76,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto updateUser(UserDto userDto) {
-       User existingUser = userRepository.findById(userDto.getId()).get();
+       User existingUser = userRepository.findById(userDto.getId()).orElseThrow(
+            () -> new ResourceNotFoundException("User", "id", userDto.getId())
+       );
        existingUser.setFirstName(userDto.getFirstName());
        existingUser.setLastName(userDto.getLastName());
        existingUser.setEmail(userDto.getEmail());
@@ -80,6 +90,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(Long userId) {
+
+        User existingUser = userRepository.findById(userId).orElseThrow(
+            () -> new ResourceNotFoundException("User", "id", userId)
+       );
+
        userRepository.deleteById(userId);
     }
 
