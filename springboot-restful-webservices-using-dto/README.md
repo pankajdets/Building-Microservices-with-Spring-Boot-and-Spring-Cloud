@@ -529,12 +529,13 @@ step 3: User AutoUserMapper in UserServiceImpl class
     **Requirement 1**
     
     
-    ![IMG20230423155246](https://user-images.githubusercontent.com/42623098/233842218-da8a96b9-7add-40df-80d7-efc877dd886f.jpg)
+![IMG20230423155246](https://user-images.githubusercontent.com/42623098/233842218-da8a96b9-7add-40df-80d7-efc877dd886f.jpg)
 
     
     Development Steps
     
-    ![IMG20230423155510](https://user-images.githubusercontent.com/42623098/233842380-18374805-c402-4747-a95d-fe4a79a83e7f.jpg)
+    
+![IMG20230423155510](https://user-images.githubusercontent.com/42623098/233842380-18374805-c402-4747-a95d-fe4a79a83e7f.jpg)
 
 
 
