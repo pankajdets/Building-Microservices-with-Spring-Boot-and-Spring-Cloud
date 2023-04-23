@@ -897,3 +897,142 @@ Development Steps
 
         }
         }
+
+
+
+                 **SpringBoot Actuator- Production Ready Features**
+
+1. Spring Boot Actuator module provides productionready features such as monitoring, metrics and
+health checks.
+2. The Spring Boot Actuator enables you to monitor the application using HTTP endpoints and JMX.
+3. Spring Boot Provides a spring-boot-starter-actuator library to auto-configure Actuator
+
+
+
+    step 1: Add below Actuator Dependency in pom.xml
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+    Restart application. By default spring boot exposes only one endpoint i.e /actuator. We can enable all the endpoints exposer by actuator by adding property in application.properties file
+
+
+    Step 2: Add below properties to expose all actuators endpoints
+        # *will enable all the actuator endpoints(13 endpoints)
+        management.endpoints.web.exposure.include=*
+        
+
+    **Commonly used Actuator endpoints**
+    
+        1. Actuator /info endpoint
+        2. Actuator /health endpoint
+        3. Actuator /beans endpoint
+        4. Actuator /conditions endpoint
+        5. Actuator /mappings endpoint
+        6. Actuator /configprops endpoint
+        7. Actuator /matrics endpoint
+        8. Actuator /env endpoint
+        9. Actuator /threaddump endpoint
+        10.Actuator /loggers endpoint
+        11.Actuator /shutdown Endpoint
+
+    **1. The /info Endpoint**
+        If you added any information about the application in
+        application.properties then we can view it using /info
+        endpoint:
+        http://localhost:8080/actuator/info
+        
+        Add below information about application in application.properties file
+
+            management.info.env.enabled=true
+
+            info.app.name=Spring Boot Restful Web Services
+            info.app.description=Spring Boot Restful Web Service Demo
+            info.app.version=1.0.0
+
+
+    **2 The /health Endpoint**
+        The /health endpoint shows the health of the
+        application, including the disk space, databases and
+        more.
+        http://localhost:8080/actuator/health
+
+        By default actuator display only the status of the application. We can display other attributes by adding below property in application.properties file
+
+        management.endpoint.health.show-details=always
+
+    **3 The /beans Endpoint**
+        The /beans endpoint shows all the beans registered in
+        your application, including the beans you explicitly
+        configured and those auto configured by Spring Boot.
+        http://localhost:8080/actuator/beans
+
+    **4 The /conditions Endpoint**
+        The /conditions endpoint shows the auto
+        configuration report, categorised into pasitiveMatches
+        and negativeMatches
+        http://localhost:8080/actuator/conditions
+
+
+    **5 The /mappings Endpoint**
+        The /mappings endpoint shows all the
+        @RequestMapping paths declared in the application.
+        This is very helpful for checking which request path
+        will be handled by which controller method.
+        http://localhost:8080/actuator/mappings
+    
+    **6 The /configprops Endpoint**   
+        The /configprops endpoint offers all the configuration
+        properties defined by @ConfigurationProperties bean,
+        including your configuration properties defined in the
+        application.properties or YAML files.
+        http://localhost:8080/actuator/configprops
+
+    **7 The /metrics Endpoint**
+        The /metrics endpoint shows various metrics about
+        the current application such as how much memory it
+        is using, how much memory is free, the size of the
+        heap used, the number of threads used, and so on.
+        http://localhost:8080/actuator/metrics
+
+    **8 The /env Endpoint**
+        The /env endpoint exposes all the properties from the
+        Spring’s ConfigurableEnvironment interface, such as
+        a list of active profiles, application properties, system
+        environment variables and so on.
+        http://localhost:8080/actuator/env
+
+    **8 The /threaddump Endpoint**
+        Using /threaddumb endpoint, you can view your
+        application’s thread dumb with running threads
+        details and JVM stack trace.
+        http://localhost:8080/actuator/threaddump
+
+    **9 The /loggers Endpoint**
+        The /loggers endpoint allows you to view and configure the log
+        levels of your application at runtime.
+        http://localhost:8080/actuator/loggers
+        You can view the logging level of the specific logger:
+        http://localhost:8080/actuator/loggers/{name}
+        Ex:
+        http://localhost:8080/actuator/loggers/com.pankajdets.springboot
+
+        You can update the logging level of the logger at a runtime by sending a POST request
+        to URL: http://localhost:8080/actuator/loggers/{name}
+        Ex: http://localhost:8080/actuator/loggers/com.pankajdets.springboot
+
+    **10 The /shutdown Endpoint**
+        The /shutdown endpoint can be used to gracefully shut down the
+        application.
+        
+        1. This endpoint not enabled by default. You can enable this
+        endpoint by adding this property in application.properties file:
+        Management.endpoint.shutdown.enabled=true
+        2. After adding this property, we need to send the HTTP POST
+        request to below endpoint:
+        http://localhost:8080/actuator/shutdown
+        3. Watch the console log for spring boot application shutdown
+
+
