@@ -766,7 +766,7 @@ Or we can create GlobalExceptionHandler class in exception package
         }
 
 
-**Spring Boot REST API Global Exception Handling**
+ **Spring Boot REST API Global Exception Handling**
 
     Add Global Exception Handler in GlobalExceptionHandler class. It will handle all other excpetion apart from that two custom exception
 
@@ -794,6 +794,11 @@ Or we can create GlobalExceptionHandler class in exception package
 
 2. Hibernate Validator is the reference implementation of the validation API.
 
+![IMG20230423190657](https://user-images.githubusercontent.com/42623098/233845906-8c297bde-0ed0-4c62-ae98-8ef836e7aba1.jpg)
+
+
+![IMG20230423190858](https://user-images.githubusercontent.com/42623098/233845976-527b8ad5-1ff9-4739-9628-69c3798b4831.jpg)
+   
 
 
 
@@ -801,6 +806,7 @@ Or we can create GlobalExceptionHandler class in exception package
 
 Development Steps
 
+![IMG20230423191113](https://user-images.githubusercontent.com/42623098/233846051-7f39845a-e55b-4d4b-8721-e057642ef4ad.jpg)
 
 
     step 1: Add Dependency
