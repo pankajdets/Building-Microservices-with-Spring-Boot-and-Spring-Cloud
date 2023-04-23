@@ -902,11 +902,14 @@ Development Steps
 
                  **SpringBoot Actuator- Production Ready Features**
 
+
+
 1. Spring Boot Actuator module provides productionready features such as monitoring, metrics and
 health checks.
 2. The Spring Boot Actuator enables you to monitor the application using HTTP endpoints and JMX.
 3. Spring Boot Provides a spring-boot-starter-actuator library to auto-configure Actuator
 
+[Spring+Boot+Actuator+Notes.pdf](https://github.com/pankajdets/Building-Microservices-with-Spring-Boot-and-Spring-Cloud/files/11304335/Spring%2BBoot%2BActuator%2BNotes.pdf)
 
 
     step 1: Add below Actuator Dependency in pom.xml
