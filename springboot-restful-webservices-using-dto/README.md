@@ -226,3 +226,290 @@ update function definition in userServiceImpl class
 Haven't use User JPA Entity object hence no need to refector
 
 
+
+
+
+**We have built UserMapper class to Map User to UserDto and Vice versa manually**
+This is not a good practice to convert convert User JPA Entity to UserDto and UserDto to JPA Entity manually
+
+        public class UserMapper {
+
+            //Convert User JPA Entity to UserDto
+            public static UserDto mapToUserDto(User user){
+                UserDto userDto = new UserDto(
+                    user.getId(),
+                    user.getFirstName(),
+                    user.getLastName(),
+                    user.getEmail()
+                    );
+                return userDto;
+            }
+
+            // convert UserDto to User JPA Entity
+            public static User mapToUser(UserDto userDto){
+                User user = new User(
+                    userDto.getId(),
+                    userDto.getFirstName(),
+                    userDto.getLastName(),
+                    userDto.getEmail()
+                );
+
+                return user;
+            }
+            
+        }
+
+
+**Using Mapping libraries to Map Entity to DTO and vice versa**
+
+**1. modelmapper library**
+
+**2. mapStruct library**
+
+**1. Using ModelMapper library to map Entity to DTO and vice versa**
+
+step 1: Add ModelMapper dependency in pom.xml
+        <!-- https://mvnrepository.com/artifact/org.modelmapper/modelmapper -->
+        <dependency>
+            <groupId>org.modelmapper</groupId>
+            <artifactId>modelmapper</artifactId>
+            <version>3.1.1</version>
+        </dependency>
+Step 2: Configure ModelMapper class as spring bean
+ Instead of creating ModelMapper object using new keyword, We can create ModelMapper clas as spring bean so that we can inject MaperMapper spring bean anywhere in the application and can use its methods
+
+ 
+        @Bean
+        public ModelMapper modelMapper(){
+            return new ModelMapper();
+        }
+
+Step 3: Inject and use ModelMapper Spring bean in Service class
+
+    private ModelMapper modelMapper; 
+    // Constructor based dependency injection to inject ModelMapper object  in UserServiceImpl class
+    //@Autowired is not required as there is single parameterize constructor @AllArgsConstructor 
+
+    Refactor UserServiceImpl class methods to use ModelMapper instance
+
+        @Service
+        @AllArgsConstructor //to create constructor  for userRepository instance variable 
+        public class UserServiceImpl implements UserService {
+
+            private UserRepository userRepository;// Constructor based dependency injection to inject userRepository in UserServiceImpl class
+            //typically we need to @Autowired annotation to inject the dependency
+            // But spring 4.3 onwards whenever there is a spring bean with single parameterize constructor, We can omit @Autowired annotation
+            // Here we have UserServiceImpl is spring bean having single parameterize constructor for userRepository
+            
+            private ModelMapper modelMapper; // Constructor based dependency injection to inject ModelMapper object  in UserServiceImpl class
+            //@Autowired is not required as there is single parameterize constructor @AllArgsConstructor 
+
+            @Override
+            public UserDto createUser(UserDto userDto) {
+                //conver UserDto to User JPA Entity
+                //Because we need to save user JPA Entity to database
+                //User user = UserMapper.mapToUser(userDto);
+
+                User user = modelMapper.map(userDto, User.class);
+                User savedUser = userRepository.save(user);
+
+                //covert User JPA Entity savedUser to UserDto object
+                //UserDto savedUserDto = UserMapper.mapToUserDto(savedUser);
+
+                UserDto savedUserDto = modelMapper.map(savedUser, UserDto.class);
+                return savedUserDto;       
+            }
+
+            @Override
+            public UserDto getUserById(Long userId) {
+                Optional<User> optionalUser =userRepository.findById(userId);
+
+                User user = optionalUser.get();
+                //return UserMapper.mapToUserDto(user);
+                return modelMapper.map(user, UserDto.class);
+            }
+
+            @Override
+            public List<UserDto> getAllUsers() {
+                List<User> users = userRepository.findAll();
+                //return users.stream().map(UserMapper :: mapToUserDto).collect(Collectors.toList());
+
+                return users.stream().map((user)->modelMapper.map(user, UserDto.class)).collect(Collectors.toList());
+            }
+
+            @Override
+            public UserDto updateUser(UserDto userDto) {
+            User existingUser = userRepository.findById(userDto.getId()).get();
+            existingUser.setFirstName(userDto.getFirstName());
+            existingUser.setLastName(userDto.getLastName());
+            existingUser.setEmail(userDto.getEmail());
+            User updatedUser = userRepository.save(existingUser);
+            //return UserMapper.mapToUserDto(updatedUser);
+
+            return modelMapper.map(updatedUser, UserDto.class);
+            }
+
+            @Override
+            public void deleteUser(Long userId) {
+            userRepository.deleteById(userId);
+            }
+
+            
+            
+        }
+
+
+
+**2. Using MapStruct library to map Entity to DTO and vice versa**
+
+step 1: Add MapStruct maven dependency in pom.xml file
+       <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>${org.mapstruct.version}</version>
+        </dependency>
+
+        <properties>
+            <org.mapstruct.version>1.5.4.Final</org.mapstruct.version>
+            <org.projectlombok.version>1.18.20</org.projectlombok.version>
+            <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
+        </properties>
+
+        Now we need to add mapstruct processor plugin in pom.xml
+
+        In order to support lombok library with mapstruct we need to use few more configuration
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.1</version>
+                    <configuration>
+                        <source>17</source>
+                        <target>17</target>
+                        <!-- See https://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html -->
+                        <!-- Classpath elements to supply as annotation processor path. If specified, the compiler   -->
+                        <!-- will detect annotation processors only in those classpath elements. If omitted, the     -->
+                        <!-- default classpath is used to detect annotation processors. The detection itself depends -->
+                        <!-- on the configuration of annotationProcessors.                                           -->
+                        <!--                                                                                         -->
+                        <!-- According to this documentation, the provided dependency processor is not considered!   -->
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.mapstruct</groupId>
+                                <artifactId>mapstruct-processor</artifactId>
+                                <version>${org.mapstruct.version}</version>
+                            </path>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                                <version>${org.projectlombok.version}</version>
+                            </path>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok-mapstruct-binding</artifactId>
+                                <version>${lombok-mapstruct-binding.version}</version>
+                            </path>
+                        </annotationProcessorPaths>
+                    </configuration>
+                </plugin>
+
+
+Step 2: Create UserMapper using MapStruct
+
+    Create interface AutoUserMapper in mapper package and declare two method as below
+        @Mapper
+        public interface AutoUserMapper {
+            //mapstruct will create implementation for these methods at compilation time
+            //We don't have to implement these methods
+
+            
+            //It will provide Implementation of interfae AutoUserMapper at compilation time
+            //We can use Mapper instance to call the mapping methods
+            AutoUserMapper Mapper = Mappers.getMapper(AutoUserMapper.class);    
+
+            //Sometime fields name are fifferent in JPA Entity and DTO in that situation we can use
+            //We can use @Mapping annotation having source=JPA Entity attribute name" and target= "DTO attribute name"
+            //@Mapping(source="email", target= "emailAddress" )
+
+
+            UserDto mapToUserDto(User user);
+            User mapToUser(UserDto userDto);
+        }
+
+
+
+step 3: User AutoUserMapper in UserServiceImpl class
+    Refactor UserServiceImpl class
+
+        @Service
+        @AllArgsConstructor //to create constructor  for userRepository instance variable 
+        public class UserServiceImpl implements UserService {
+
+            private UserRepository userRepository;// Constructor based dependency injection to inject userRepository in UserServiceImpl class
+            //typically we need to @Autowired annotation to inject the dependency
+            // But spring 4.3 onwards whenever there is a spring bean with single parameterize constructor, We can omit @Autowired annotation
+            // Here we have UserServiceImpl is spring bean having single parameterize constructor for userRepository
+            
+            private ModelMapper modelMapper; // Constructor based dependency injection to inject ModelMapper object  in UserServiceImpl class
+            //@Autowired is not required as there is single parameterize constructor @AllArgsConstructor 
+
+            @Override
+            public UserDto createUser(UserDto userDto) {
+                //conver UserDto to User JPA Entity
+                //Because we need to save user JPA Entity to database
+                //User user = UserMapper.mapToUser(userDto);
+                //User user = modelMapper.map(userDto, User.class);
+
+                User user = AutoUserMapper.MAPPER.mapToUser(userDto);
+                User savedUser = userRepository.save(user);
+
+                //covert User JPA Entity savedUser to UserDto object
+                //UserDto savedUserDto = UserMapper.mapToUserDto(savedUser);
+                //UserDto savedUserDto = modelMapper.map(savedUser, UserDto.class);
+
+                UserDto savedUserDto = AutoUserMapper.MAPPER.mapToUserDto(savedUser);
+
+                return savedUserDto;       
+            }
+
+            @Override
+            public UserDto getUserById(Long userId) {
+                Optional<User> optionalUser =userRepository.findById(userId);
+
+                User user = optionalUser.get();
+                //return UserMapper.mapToUserDto(user);
+                //return modelMapper.map(user, UserDto.class);
+                return AutoUserMapper.MAPPER.mapToUserDto(user);
+            }
+
+            @Override
+            public List<UserDto> getAllUsers() {
+                List<User> users = userRepository.findAll();
+                //return users.stream().map(UserMapper :: mapToUserDto).collect(Collectors.toList());
+                //return users.stream().map((user)->modelMapper.map(user, UserDto.class)).collect(Collectors.toList());
+                return users.stream().map((user)->AutoUserMapper.MAPPER.mapToUserDto(user)).collect(Collectors.toList());
+            }
+
+            @Override
+            public UserDto updateUser(UserDto userDto) {
+            User existingUser = userRepository.findById(userDto.getId()).get();
+            existingUser.setFirstName(userDto.getFirstName());
+            existingUser.setLastName(userDto.getLastName());
+            existingUser.setEmail(userDto.getEmail());
+            User updatedUser = userRepository.save(existingUser);
+            //return UserMapper.mapToUserDto(updatedUser);
+            //return modelMapper.map(updatedUser, UserDto.class);
+            return AutoUserMapper.MAPPER.mapToUserDto(updatedUser);
+            }
+
+            @Override
+            public void deleteUser(Long userId) {
+            userRepository.deleteById(userId);
+            }
+
+            
+            
+        }
+
+
+
