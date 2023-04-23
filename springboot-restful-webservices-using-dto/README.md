@@ -1039,3 +1039,158 @@ health checks.
         3. Watch the console log for spring boot application shutdown
 
 
+    **SpringBoot REST API Documentation using SpringDoc Open API**
+    **Swagger API Documentation**
+
+    **Step 1: Add below dependency**
+        <!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+
+     restart application and hit url http://localhost:8080/swagger-ui/index.html
+ 
+
+    **Step 2: Define General API information using Annotations**
+
+    Annotate entry point class with below
+
+    
+            @OpenAPIDefinition(
+            info =@Info(
+                title = "Spring Boot REST API Documentation",
+                description = "Spring Boot REST API Documentation",
+                version ="v1.0.0",
+                contact = @Contact(
+                    name = "Pankaj Ray",
+                    email ="pankajdets@gmail.com",
+                    url ="https://www.linkedin.com/in/pankaj-kumar-ray/"
+                ),
+                license = @License(
+                    name = "Apache 2.0",
+                    url = "https://www.linkedin.com/in/pankaj-kumar-ray/license"
+                )
+            ),
+            externalDocs =@ExternalDocumentation(
+                description = "Spring Boot user Management Documentation",
+                url = "https://www.linkedin.com/in/pankaj-kumar-ray/user-management.html"
+
+            )
+        )
+
+        Add pic
+
+
+        **Step 3: Customizing Swagger API Documentation using Annotations**
+
+        To Provide information about REST APIs
+        
+            @Tag(
+                name = "CRUD REST API for USER Resource",
+                description = "Create User, Update user, Get User, Get All users, Delete User"
+            )
+            @RestController // To this class spring MVC rest controller
+            @AllArgsConstructor //to create constructor  for single argument  userService instance variable
+            @RequestMapping("api/users") // satting base url at class level
+            public class UserController {
+                private UserService userService;// Constructor based dependency injection to inject userService in UserController class
+                //typically we need to @Autowired annotation to inject the dependency
+                // But spring 4.3 onwards whenever there is a spring bean with single parameterize constructor, We can omit @Autowired annotation
+                // Here using @AllArgsConstructor we have created Constructor for single argument userService 
+                
+
+                //build Create User REST API
+                @Operation(
+                    summary = "Create User REST API",
+                    description = "Create User REST API is used to save user in a database"
+                )
+                @ApiResponse(
+                    responseCode = "201",
+                    description = "Http Status 201 CREATED"
+                )
+                @PostMapping
+                public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto){
+                    UserDto savedUserDto = userService.createUser(userDto);
+                    return new ResponseEntity<>(savedUserDto, HttpStatus.CREATED);
+                }
+
+                //build get user by id REST API
+                //http://localhost:8080/api/users/1
+                @Operation(
+                    summary = "GET User By ID REST API",
+                    description = "Get User By ID  REST API is used to get single user from database"
+                )
+                @ApiResponse(
+                    responseCode = "200",
+                    description = "Http Status 200 SUCCESS"
+                )
+                @GetMapping("{id}")
+                public ResponseEntity<UserDto> getUserById(@PathVariable("id") Long userId){
+                    UserDto userDto = userService.getUserById(userId);
+                    return new ResponseEntity<>(userDto, HttpStatus.OK);
+                }
+
+
+                //build get all users REST API
+                //http://localhost:8080/api/users
+                @Operation(
+                    summary = "GET All Users REST API",
+                    description = "GET All Users  REST API is used to get all the  users from database"
+                )
+                @ApiResponse(
+                    responseCode = "200",
+                    description = "Http Status 200 SUCCESS"
+                )
+                @GetMapping
+                public ResponseEntity<List<UserDto>> getAllusers(){
+                    List<UserDto> usersDto = userService.getAllUsers();
+                    return new ResponseEntity<>(usersDto, HttpStatus.OK);
+                }
+
+                //build update user REST API
+                //http://localhost:8080/api/users/1
+                @Operation(
+                    summary = "Update User REST API",
+                    description = "Update User  REST API is used to update a particular user in database"
+                )
+                @ApiResponse(
+                    responseCode = "200",
+                    description = "Http Status 200 SUCCESS"
+                )
+                @PutMapping("{id}")
+                public ResponseEntity<UserDto> updateUSer(@PathVariable("id") Long userId, @RequestBody @Valid UserDto userDto){
+                    userDto.setId(userId);
+                    UserDto updatedUserDto = userService.updateUser(userDto);
+                    return new ResponseEntity<>(updatedUserDto, HttpStatus.OK);
+                }
+
+                //build delete user REST API
+                //http://localhost:8080/api/users/1
+                @Operation(
+                    summary = "Delete User REST API",
+                    description = "Delete User  REST API is used to delete a particular user from the database"
+                )
+                @ApiResponse(
+                    responseCode = "200",
+                    description = "Http Status 200 SUCCESS"
+                )
+                @DeleteMapping("{id}")
+                public ResponseEntity<String> deleteuser(@PathVariable("id") Long userId){
+                    userService.deleteUser(userId);
+                    return new ResponseEntity<String>("user Successfully deleted", HttpStatus.OK);
+                }
+
+
+            }
+
+
+
+    **Steps 4: Customizing Swagger Models Documentation with Annotations**
+
+    
+
+
+
+
