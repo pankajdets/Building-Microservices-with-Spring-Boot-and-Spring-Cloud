@@ -22,6 +22,7 @@ import com.pankajdets.springbootrestfulwebservicesusingdto.exception.ResourceNot
 import com.pankajdets.springbootrestfulwebservicesusingdto.model.User;
 import com.pankajdets.springbootrestfulwebservicesusingdto.service.UserService;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @RestController // To this class spring MVC rest controller
@@ -35,7 +36,7 @@ public class UserController {
     
     //build Create User REST API
     @PostMapping
-    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto){
+    public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto){
         UserDto savedUserDto = userService.createUser(userDto);
         return new ResponseEntity<>(savedUserDto, HttpStatus.CREATED);
     }
@@ -60,7 +61,7 @@ public class UserController {
     //build update user REST API
      //http://localhost:8080/api/users/1
     @PutMapping("{id}")
-    public ResponseEntity<UserDto> updateUSer(@PathVariable("id") Long userId, @RequestBody UserDto userDto){
+    public ResponseEntity<UserDto> updateUSer(@PathVariable("id") Long userId, @RequestBody @Valid UserDto userDto){
         userDto.setId(userId);
         UserDto updatedUserDto = userService.updateUser(userDto);
         return new ResponseEntity<>(updatedUserDto, HttpStatus.OK);

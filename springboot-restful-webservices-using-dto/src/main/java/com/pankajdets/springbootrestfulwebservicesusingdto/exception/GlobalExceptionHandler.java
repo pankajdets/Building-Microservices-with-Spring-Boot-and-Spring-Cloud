@@ -1,17 +1,27 @@
 package com.pankajdets.springbootrestfulwebservicesusingdto.exception;
 
+import java.io.ObjectInputStream.GetField;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @ControllerAdvice //To handle the Exception Globally 
 //Means we use his annotation to handle all the specific exception and as well as global exception in single place
-public class GlobalExceptionHandler {
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler{
 
     //Custom Exception handler
     @ExceptionHandler(ResourceNotFoundException.class) // To handle Specific Exception and return custom Error Response back to client
@@ -58,4 +68,23 @@ public class GlobalExceptionHandler {
 
      return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
  }
+
+@Override
+protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+        HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+    
+    Map<String, String> errors = new HashMap<>();
+    List<ObjectError> errorList = ex.getBindingResult().getAllErrors();
+
+    errorList.forEach((error) -> {
+        String fieldName = ((FieldError) error).getField();
+        String message = error.getDefaultMessage();
+        errors.put(fieldName, message );
+
+    });
+    
+    return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+
+
+}
 }

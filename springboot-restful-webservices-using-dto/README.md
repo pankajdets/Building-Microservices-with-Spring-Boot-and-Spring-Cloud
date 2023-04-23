@@ -787,3 +787,107 @@ Or we can create GlobalExceptionHandler class in exception package
         }
 
         
+
+        **Spring Boot REST API Request Validation**
+
+1. In Java, the Java Bean Validation API has become the de-facto standard for handling validfations in java projects.
+
+2. Hibernate Validator is the reference implementation of the validation API.
+
+
+
+
+**Validate Create and Update User REST API Requests**
+
+Development Steps
+
+
+
+    step 1: Add Dependency
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+    step 2: Add Validation Annotations to USerDto class
+
+        //Don't include sensitive information in User DTO
+        //Beacuse We don't want to send sensitive information to client
+        @Setter
+        @Getter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public class UserDto {
+            private long id;
+            
+            @NotEmpty //Requirement like User first name should not be null or empty
+            private String firstName;
+            @NotEmpty //Requirement like User last name should not be null or empty
+            private String lastName;
+            @NotEmpty //Requirement like User email name should not be null or empty
+            @Email  //Requirement like email address should be valid
+            private String email;
+        }
+    
+    
+    step 3: Enable Validation using @Valid annotation on Create and Update Rest APIs
+
+            @PostMapping
+            public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto){
+                UserDto savedUserDto = userService.createUser(userDto);
+                return new ResponseEntity<>(savedUserDto, HttpStatus.CREATED);
+            } 
+
+            @PutMapping("{id}")
+            public ResponseEntity<UserDto> updateUSer(@PathVariable("id") Long userId, @RequestBody @Valid UserDto userDto){
+                userDto.setId(userId);
+                UserDto updatedUserDto = userService.updateUser(userDto);
+                return new ResponseEntity<>(updatedUserDto, HttpStatus.OK);
+            }
+    
+    step 4: Customize validation Error Response and send back to client
+        extend GlobalExceptionHandler from ResponseEntityExceptionHandler
+        Ovverdide method handleMethodArgumentNotValid() as below
+
+        @ControllerAdvice //To handle the Exception Globally 
+        //Means we use his annotation to handle all the specific exception and as well as global exception in single place
+        public class GlobalExceptionHandler extends ResponseEntityExceptionHandler{
+
+        @Override
+        protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+                HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+            
+            Map<String, String> errors = new HashMap<>();
+            List<ObjectError> errorList = ex.getBindingResult().getAllErrors();
+
+            errorList.forEach((error) -> {
+                String fieldName = ((FieldError) error).getField();
+                String message = error.getDefaultMessage();
+                errors.put(fieldName, message );
+
+            });
+            
+            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+
+
+    We can return customize message to client after adding message attribute to annotation
+
+            public class UserDto {
+            private long id;
+            //Requirement like User first name should not be null or empty
+            @NotEmpty(message = "User first name should not be null or empty") 
+            private String firstName;
+            //Requirement like User last name should not be null or empty
+            @NotEmpty(message = " User last name should not be null or empty")
+            private String lastName;
+            //Requirement like User email name should not be null or empty
+            //Requirement like email address should be valid
+            @NotEmpty(message = " User email name should not be null or empty")
+            @Email(message = " email address should be valid")
+            private String email;
+            }
+
+
+        }
+        }
