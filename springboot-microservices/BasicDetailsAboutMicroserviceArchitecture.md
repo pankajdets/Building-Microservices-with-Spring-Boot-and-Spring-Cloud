@@ -1,1 +1,0 @@
-**Basic Details about Microservice Architecture and Component involved**

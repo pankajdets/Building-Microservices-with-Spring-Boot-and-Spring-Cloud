@@ -1041,6 +1041,13 @@ health checks.
 
     **SpringBoot REST API Documentation using SpringDoc Open API**
     **Swagger API Documentation**
+    
+![100](https://user-images.githubusercontent.com/42623098/233857548-90beaedb-5458-48a2-b91b-4ff48183f769.jpg)
+
+    Developement Steps
+    
+![101](https://user-images.githubusercontent.com/42623098/233857617-6a898466-dd02-4777-a562-15a8273b8d60.jpg)
+
 
     **Step 1: Add below dependency**
         <!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui -->
@@ -1080,7 +1087,9 @@ health checks.
             )
         )
 
-        Add pic
+     
+<img width="960" alt="1" src="https://user-images.githubusercontent.com/42623098/233857694-afc39165-92e7-4d42-8b25-75c292e50fa3.PNG">
+
 
 
         **Step 3: Customizing Swagger API Documentation using Annotations**
@@ -1184,10 +1193,15 @@ health checks.
 
 
             }
+    
+    
+<img width="843" alt="2" src="https://user-images.githubusercontent.com/42623098/233857736-c1c479bd-40be-4ee1-945c-c7cb46abb10d.PNG">
+
 
 
 
     **Steps 4: Customizing Swagger Models Documentation with Annotations**
+
         goto userDto class and use @Schema
 
             @Schema(
@@ -1222,6 +1236,12 @@ health checks.
                 @Email(message = " email address should be valid")
                 private String email;
             }
+
+
+
+
+
+<img width="899" alt="3" src="https://user-images.githubusercontent.com/42623098/233857782-a943fcdd-acbf-4af5-988b-a5a4c976e29b.PNG">
 
 
 
