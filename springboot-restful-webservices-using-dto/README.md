@@ -517,11 +517,25 @@ step 3: User AutoUserMapper in UserServiceImpl class
 
 **Spring Boot Default Error Handling Overview**
 
+![IMG20230423155108](https://user-images.githubusercontent.com/42623098/233842045-e206d6dd-3515-42ee-872e-29e646905a5d.jpg)
+
 
 **Spring Boot REST API Exception Handling Overview**
 
+![IMG20230423155411](https://user-images.githubusercontent.com/42623098/233842283-f8ea6318-19ec-4b73-8b61-5e9ebb887589.jpg)
+
+
 **Create And Use ResourceNotFound Custom Exception**
-    Requirement
+    **Requirement 1**
+    
+    
+    ![IMG20230423155246](https://user-images.githubusercontent.com/42623098/233842218-da8a96b9-7add-40df-80d7-efc877dd886f.jpg)
+
+    
+    Development Steps
+    
+    ![IMG20230423155510](https://user-images.githubusercontent.com/42623098/233842380-18374805-c402-4747-a95d-fe4a79a83e7f.jpg)
+
 
 
     Create exception package
@@ -622,7 +636,7 @@ step 3: User AutoUserMapper in UserServiceImpl class
             
         }
 
-We were using Spring Boot default execution handler
+We were using Spring Boot default exeception handler
 
 
 **Create Error Details Class to hold the custom Error Response**
@@ -683,6 +697,10 @@ Or we can create GlobalExceptionHandler class in exception package
 
 **Requirement 2**
 **If User email already exists in the database then we need to to throw exception with proper error message and status code**
+
+![IMG20230423180021](https://user-images.githubusercontent.com/42623098/233842496-85d2f559-85bb-4590-9984-b20db7049012.jpg)
+
+
 
     Create  EmailAlreadyExistsException class by extending RuntimeException
 
