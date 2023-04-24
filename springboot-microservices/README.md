@@ -346,4 +346,54 @@ Developmentv Steps
 ![image](https://user-images.githubusercontent.com/42623098/234043574-91058dc1-7ebd-401f-8142-516a53d7edad.png)
 
 
+2. Add @EnableEurekaServer annotation
+    Annotate service-registry entry class with @EnableEurekaServer 
+    // This will make this spring boot project as Eureka Server
 
+3. Disable Eureka Server as Eureka Client
+    Eureka Server is also a Eureka client and we need to disable this behaviour
+    Add below properies in application.properties file
+
+        spring.application.name=SERVICE-REGISTRY
+        server.port=8761
+        #By default, each Eureka Server is also a Eureka Client and We need to disable client-side behaviour
+        #by configuring these properties in the application.properties file
+        eureka.client.register-with-eureka=false
+        eureka.client.fetch-registry=false
+
+        We can see Srping Eureka UI at http://localhost:8761
+
+4. Launch Eureka Server  and check at http://localhost:8761
+
+5. Registering department-service microservice as Eureka Client
+        Add below dependency in  depart-service
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+            </dependency>
+
+
+            <properties>
+                 <spring-cloud.version>2022.0.2</spring-cloud.version>
+            </properties>
+
+            <dependencyManagement>
+                <dependencies>
+                <dependency>
+                    <groupId>org.springframework.cloud</groupId>
+                    <artifactId>spring-cloud-dependencies</artifactId>
+                    <version>${spring-cloud.version}</version>
+                    <type>pom</type>
+                    <scope>import</scope>
+                </dependency>
+                </dependencies>
+            </dependencyManagement>
+
+   
+        set department-service name in application.properties file
+            spring.application.name= DEPARTMENT-SERVICE
+6. Run department-service Eureka Client- running successfully
+7. Registering employee-service microservice as Eureka Client
+        Add dependency same as department service andrest it will auto config
+        set application name
+            spring.application.name= EMPLOYEE-SERVICE
