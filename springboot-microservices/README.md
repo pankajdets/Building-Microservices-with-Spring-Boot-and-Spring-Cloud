@@ -17,3 +17,6 @@ For the React-Frontend application, use the 3000 port.
 
 Zipkin Server uses the default port 9411
 
+![M4](https://user-images.githubusercontent.com/42623098/233919456-b00335f4-f962-4688-a414-2d60cc0a1e2d.jpeg)
+
+![M3](https://user-images.githubusercontent.com/42623098/233919675-d122042a-ef48-4a8c-9b20-22ad9825c1e0.jpg)
