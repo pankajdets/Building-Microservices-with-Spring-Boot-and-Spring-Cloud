@@ -28,3 +28,40 @@ Create Two Microservice Employee Service and Department service
 ![image](https://user-images.githubusercontent.com/42623098/233922989-dbabe9dc-c727-4a99-baa6-f329b6e50d2c.png)
 
 ![image](https://user-images.githubusercontent.com/42623098/233923138-cea3e3fb-fc04-4608-905b-d1926b9f20c8.png)
+
+Configure And Develop REST APIs in department-service
+
+Setup Database connection in department-service
+    Create database department_db
+    Add below properties in application.properties file
+        spring.datasource.url=jdbc:mysql://localhost:3306/department_db
+        spring.datasource.username= root
+        spring.datasource.password=Munnu@10Oct
+
+        spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+        spring.jpa.hibernate.ddl-auto=update
+
+Create Department JPA Entity and Spring Data JPA Repository in department-service
+        @Getter
+        @Setter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        @Entity
+        @Table(name ="departments")
+        public class Department {
+            @Id
+            @GeneratedValue(strategy = GenerationType.IDENTITY)
+            private Long id;
+            private String departmentName;
+            private String departmentDescription;
+            private String departmentCode;
+        }
+
+Build Save Department REST API in department-service
+Build Get Department REST API in department-service
+
+
+Configure And Develop REST APIs in employee-service
+
+
+
