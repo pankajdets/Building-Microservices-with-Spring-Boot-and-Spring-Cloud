@@ -135,10 +135,14 @@ Make a REST API call from employee-service to department-service using RestTempl
 **Requirements**
 
 
+![R1](https://user-images.githubusercontent.com/42623098/234000234-90e71313-c811-4a84-8861-606de806643a.jpg)
 
 
 
 **Development Steps**
+
+![R2](https://user-images.githubusercontent.com/42623098/234000266-65945ffd-f145-4d36-a6dc-51ab66e2cac4.jpg)
+
 
 
 Step 1: Add departmentCode field in Employee JPA Entity
@@ -202,7 +206,7 @@ Step 4: Inject and Use RestTemplate to make REST API call in EmployeeServiceImpl
     }
 
 
-################################################################################################
+############################################################################################################################
 **Important Methods in Resttemplate**
 
 
