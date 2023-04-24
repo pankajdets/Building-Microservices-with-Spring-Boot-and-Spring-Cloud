@@ -10,6 +10,7 @@ import com.pankajdets.employeeservice.dto.DepartmentDto;
 import com.pankajdets.employeeservice.dto.EmployeeDto;
 import com.pankajdets.employeeservice.entity.Employee;
 import com.pankajdets.employeeservice.repository.EmployeeRepository;
+import com.pankajdets.employeeservice.service.APIClient;
 import com.pankajdets.employeeservice.service.EmployeeService;
 
 import lombok.AllArgsConstructor;
@@ -20,7 +21,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private EmployeeRepository employeeRepository;
     //private RestTemplate restTemplate; //Constructor based dependency injection
-    private WebClient webClient;
+    //private WebClient webClient;
+
+    private APIClient apiClient;
 
     @Override
     public EmployeeDto saveEmployee(EmployeeDto employeeDto) {
@@ -54,14 +57,19 @@ public class EmployeeServiceImpl implements EmployeeService {
         
        Employee employee =  employeeRepository.findById(employeeId).get();
 
+       //Below two line of code is for RestTemplate communication
        //ResponseEntity<DepartmentDto> responseEntity = restTemplate.getForEntity("http://localhost:8080/api/departments/"+employee.getDepartmentCode(), DepartmentDto.class);
         //DepartmentDto departmentDto = responseEntity.getBody();
 
-        DepartmentDto departmentDto = webClient.get()
-                .uri("http://localhost:8080/api/departments/"+employee.getDepartmentCode())
-                .retrieve()
-                .bodyToMono(DepartmentDto.class)
-                .block();
+        //Below  code is for WebClient communication
+        // DepartmentDto departmentDto = webClient.get()
+        //         .uri("http://localhost:8080/api/departments/"+employee.getDepartmentCode())
+        //         .retrieve()
+        //         .bodyToMono(DepartmentDto.class)
+        //         .block();
+
+        // Below  code is for Open Feign communication
+        DepartmentDto departmentDto = apiClient.getDepartment(employee.getDepartmentCode());
 
        //Convert Employee JPA Entity to EmployeeDto
 

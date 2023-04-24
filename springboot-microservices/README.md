@@ -267,8 +267,65 @@ Development Steps:
 
 Make a REST API call from employee-service to department-service
 
+**Development Steps**
+1. Add Spring Cloud open feign Maven dependency to employee-service
+        <dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-openfeign</artifactId>
+		</dependency>
+
+    we  we have to add spring cloud starter related dependency, We need to also add dependencyManagement in pom.xml file
+
+    <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-dependencies</artifactId>
+        <version>${spring-cloud.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  Need to add spring-cloud.version version as well
+
+  <properties>
+		<spring-cloud.version>2022.0.2</spring-cloud.version>
+  </properties>
 
 
+2. Enable Feign Client using @EnableFeignClients
+    Annotate main entry class with @EnableFeignClients
+    // Enables components scanning for interfaces that declare they are Feign clients
+
+3. Create Feign API Client
+    Create APIClient interface in service package
+
+        @FeignClient(url = "http://localhost:8080", value = "DEPARTMENT-SERVICE")
+        public interface APIClient {
+            //Open Feign library will dynamically create implementation for this interface
+            @GetMapping("api/departments/{department-code}")
+            DepartmentDto getDepartment(@PathVariable("department-code") String departmentCode); 
+        }
+
+
+
+4. Change the getEmployeeById  method in EmployeeServiceImpl class  to use APIClient
+        private APIClient apiClient;
+
+        DepartmentDto departmentDto = apiClient.getDepartment(employee.getDepartmentCode());
+
+5. Test using postman
+
+######################################################################################################
+
+**Important Methods in Open Feign library**
+
+
+
+
+######################################################################################################
 
 
 
