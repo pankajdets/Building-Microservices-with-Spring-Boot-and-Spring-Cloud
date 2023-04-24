@@ -226,8 +226,46 @@ Note:  As of 5.0, the RestTemplate class is in maintenance model and soon will b
 
 ###############################################################################################
 
+**Microservice Comminication Using WebClient**
+
+Make a REST API call from employee-service to department-service
+
+Development Steps:
+1. Add Spring WebFlux Dependency
+        <dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+		</dependency>
+2. Configure WebClient as Spring Bean
+        @Bean
+        public  WebClient webClient(){
+            return WebClient.builder().build();
+        }
+3. inject and use WebClient to Call the Rest API
+        private WebClient webClient; //Constructor injection
+
+         DepartmentDto departmentDto = webClient.get()
+                .uri("http://localhost:8080/api/departments/"+employee.getDepartmentCode())
+                .retrieve()
+                .bodyToMono(DepartmentDto.class)
+                .block();
+
+4. Test using postman client
 
 
+######################################################################################################
+**Important Methods in WebClient**
+
+
+
+
+######################################################################################################
+
+
+**Microservice Comminication Using Spring Cloud Open Feign**
+
+
+Make a REST API call from employee-service to department-service
 
 
 
