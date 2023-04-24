@@ -29,6 +29,8 @@ Create Two Microservice Employee Service and Department service
 
 ![image](https://user-images.githubusercontent.com/42623098/233923138-cea3e3fb-fc04-4608-905b-d1926b9f20c8.png)
 
+##############################################################################################
+
 **Configure And Develop REST APIs in department-service**
 
 Setup Database connection in department-service
@@ -60,6 +62,7 @@ Create Department JPA Entity and Spring Data JPA Repository in department-servic
 Build Save Department REST API in department-service
 Build Get Department REST API in department-service
 
+#########################################################################################
 
 **Configure And Develop REST APIs in employee-service**
 
@@ -71,6 +74,7 @@ Create Employee JPA Entity and Spring Data JPA Repository
 Build Save Employee REST API in employee-service
 Build Get Employee REST API in employee-service
 
+##################################################################################################
 **Assignments**
 
 **Assignment 1**
@@ -98,9 +102,130 @@ The @ControllerAdvice is an annotation, to handle the exceptions globally.
 
 
 
-##########################################################################################################################################
+##################################################################################################
 
-    
+Microservices Communication
+
+3 Different Ways
+1. Rest Template
+2. WebClient
+3. Spring Cloud OpenFeign
+
+Two Kinds of communication Styles
+1. Synchronous Communication
+2. Asynchronous Communication
+
+1. Synchronous COmmunication: 
+
+    1. The Client sends a request and waits for a response from the service.
+    2. The important point here is that the protocol (HTTP/HTTPS) is synchronous and the client code can only continue its task when it receives the HTTP server response
+    3. We can acheive synchronous communication using RestTemplate, WebClient and Spring Cloud Open Feign library
+
+2. Asynchronous Asynchronous
+    1. The client sends a request and does not wait for a response from the service
+    2. The client will continue executing its task-It don't wait for the response from service
+    3. In case ofv Asynchronous Asynchronous, the client and server uses middle component called "Message Broker" example RabbitMQ or Apache Kafka
+
+############################################################################################
+
+**1. microservice Communication using RestTemplate**
+
+Make a REST API call from employee-service to department-service using RestTemplate
+
+**Requirements**
+
+
+
+
+
+**Development Steps**
+
+
+Step 1: Add departmentCode field in Employee JPA Entity
+    public class Employee {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String firstName;
+    private String lastName;
+    @Column(nullable = false, unique = true)
+    private String email;
+    private String departmentCode;   
+    }
+
+Step 2: Create DepartmentDto class in employee-service
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public class DepartmentDto {
+        private Long id;
+        private String departmentName;
+        private String departmentDescription;
+        private String departmantCode;
+
+        
+    }
+
+Step 3: Configure RestTemplate as spring bean
+    Add below code in Entry point class
+
+    @Bean
+	public RestTemplate restTemplate(){
+		return new RestTemplate();
+	}
+
+Step 4: Inject and Use RestTemplate to make REST API call in EmployeeServiceImpl class
+
+    private RestTemplate restTemplate; //Constructor based dependency injection
+
+    @Override
+    public APIResponseDto getEmployeeById(Long employeeId) {
+        
+       Employee employee =  employeeRepository.findById(employeeId).get();
+
+       ResponseEntity<DepartmentDto> responseEntity = restTemplate.getForEntity("http://localhost:8080/api/departments/"+employee.getDepartmentCode(), DepartmentDto.class);
+
+        DepartmentDto departmentDto = responseEntity.getBody();
+       //Convert Employee JPA Entity to EmployeeDto
+
+       EmployeeDto employeeDto = new EmployeeDto(
+        employee.getId(),
+        employee.getFirstName(),
+        employee.getLastName(),
+        employee.getEmail(),
+        employee.getDepartmentCode()
+       );
+
+       APIResponseDto apiResponseDto = new APIResponseDto(employeeDto, departmentDto);
+       return apiResponseDto;
+    }
+
+
+################################################################################################
+**Important Methods in Resttemplate**
+
+
+
+
+
+
+
+
+
+
+###############################################################################################
+
+
+Note:  As of 5.0, the RestTemplate class is in maintenance model and soon will be deprecated. So the Spring team recommended using  WebClient that has a modern API and support sync, async, and streaming scenarios.
+
+
+###############################################################################################
+
+
+
+
+
 
 
 
