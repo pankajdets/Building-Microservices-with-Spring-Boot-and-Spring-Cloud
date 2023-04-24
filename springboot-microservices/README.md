@@ -29,7 +29,7 @@ Create Two Microservice Employee Service and Department service
 
 ![image](https://user-images.githubusercontent.com/42623098/233923138-cea3e3fb-fc04-4608-905b-d1926b9f20c8.png)
 
-Configure And Develop REST APIs in department-service
+**Configure And Develop REST APIs in department-service**
 
 Setup Database connection in department-service
     Create database department_db
@@ -61,7 +61,47 @@ Build Save Department REST API in department-service
 Build Get Department REST API in department-service
 
 
-Configure And Develop REST APIs in employee-service
+**Configure And Develop REST APIs in employee-service**
+
+Setup Database connection in employee-service
+    Create database employee_db
+    Add properties in application.properties file
+
+Create Employee JPA Entity and Spring Data JPA Repository
+Build Save Employee REST API in employee-service
+Build Get Employee REST API in employee-service
+
+**Assignments**
+
+**Assignment 1**
+
+1. Use ModelMapper and MapStruct Mapping Libraries in EmployeeService to convert the Employee JPA entity to EmployeeDto and Vice Versa.
+
+2. Use ModelMapper and MapStruct Mapping Libraries in DepartmentService to convert the Department JPA entity to DepartmentDto and Vice Versa.
+
+**Assignment 2**
+Exception Handling in department-service and employee-service
+
+1. Create ErrorDetails class to hold the custom error response
+2. Create ResourceNotFoundException in EmployeeService and use this ResourceNotFoundException in the getEmployeeById() method in EmployeeServiceImpl class
+3. Create GlobalExceptionHandler class in EmployeeService to handle specific ResourceNotFoundException and global exceptions in a single place.
+4. Create ResourceNotFoundException in DepartmentService and use this ResourceNotFoundException in the getDepartmentByCode() method in DepartmentServiceImpl class
+5. Create GlobalExceptionHandler in DepartmentService to handle specific ResourceNotFoundException and global exceptions in a single place.
+
+**What are important annotations for handling Exceptions in the Spring Boot application?**
+
+Spring provides two important @ExceptionHandler and @ControllerAdvice annotations to handle the exceptions (controller level as well as globally) and returns the custom error response back to the client.
+The @ExceptionHandler is an annotation used to handle the specific exceptions and send the custom responses to the client.
+The @ControllerAdvice is an annotation, to handle the exceptions globally.
+
+
+
+
+
+##########################################################################################################################################
+
+    
+
 
 
 
