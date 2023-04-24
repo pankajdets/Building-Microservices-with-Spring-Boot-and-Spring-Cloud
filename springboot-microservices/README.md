@@ -329,13 +329,21 @@ Make a REST API call from employee-service to department-service
 
 **Understanding Service Registry**
 
+![s1](https://user-images.githubusercontent.com/42623098/234043325-557a6a52-d921-4953-96f8-8293ddcc8118.jpg)
 
+
+
+![s2](https://user-images.githubusercontent.com/42623098/234043384-3f10bd2a-bf60-4da7-b8b6-1cc2204929af.jpg)
 
 
 Developmentv Steps
 
+![s3](https://user-images.githubusercontent.com/42623098/234043417-0aaea338-e7e5-427a-8c33-6d110385dab9.jpg)
+
 
 1. Create Spring boot project as Microservice(service-registry)
+
+![image](https://user-images.githubusercontent.com/42623098/234043574-91058dc1-7ebd-401f-8142-516a53d7edad.png)
 
 
 
