@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import com.pankajdets.employeeservice.dto.DepartmentDto;
 
-@FeignClient(url = "http://localhost:8080", value = "DEPARTMENT-SERVICE")
+@FeignClient(name = "DEPARTMENT-SERVICE")
 public interface APIClient {
     //Open Feign library will dynamically create implementation for this interface
     @GetMapping("api/departments/{department-code}")

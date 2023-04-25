@@ -397,3 +397,40 @@ Developmentv Steps
         Add dependency same as department service andrest it will auto config
         set application name
             spring.application.name= EMPLOYEE-SERVICE
+
+8. Running Multiple instance of department-service
+
+    Generate jar file for department-service
+        goto department-service directory using cd command
+        and run command (mvn install)  to generate jar file for department service
+    
+    Run jar file
+        java -jar -Dserver.port=8082 target/jarfile.jar
+        It will run new instance of department-service on port 8082
+    
+    We can see it on Eureka Service UI
+
+    Try accessing both the instance of department-service running on port 8080 and 8082
+
+
+ Another way to run multiple instancse
+ run first instance and then change port number in application.properties file and run run 2nd instance   
+
+########################################################################################################
+**Load Balancing with Eureka Open Feign**
+
+Now we have two instance of department-service up and running we can call both the instance from
+employee-service. Let's see how to load balance between these two instance of department-service
+
+
+In order to load balance we just have to change the url of Open Feign Client annotation in APIClient interface
+
+@FeignClient(url = "http://localhost:8080", value = "DEPARTMENT-SERVICE")
+
+@FeignClient(name = "DEPARTMENT-SERVICE")
+
+DEPARTMENT-SERVICE is service id of department-service. Eureka server will automatically take 
+application name as service id.
+
+now test and see if employee-service in calling both the instance of deprat-service alternatevly
+#####################################################################################################
