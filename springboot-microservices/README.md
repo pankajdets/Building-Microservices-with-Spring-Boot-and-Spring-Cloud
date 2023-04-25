@@ -422,6 +422,8 @@ Developmentv Steps
 Now we have two instance of department-service up and running we can call both the instance from
 employee-service. Let's see how to load balance between these two instance of department-service
 
+![l1](https://user-images.githubusercontent.com/42623098/234206769-2ddf964e-f69e-4d5f-ab3a-598e02e8765b.jpg)
+
 
 In order to load balance we just have to change the url of Open Feign Client annotation in APIClient interface
 
