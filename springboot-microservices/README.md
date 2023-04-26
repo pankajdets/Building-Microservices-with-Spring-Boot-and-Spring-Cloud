@@ -436,3 +436,69 @@ application name as service id.
 
 now test and see if employee-service in calling both the instance of deprat-service alternatevly
 #####################################################################################################
+
+**Understanding API Gateway**
+
+
+
+1. Create and Setup API Gateway Microservice
+
+
+2. Register API-Gateway as Eureka Client to Eureka Server
+    Add below code to application. properties file
+        spring.application.name=API-GATEWAY
+        server.port=9191
+    Rest it will auto configure
+
+3. Configure API Gateway Routes and Test using Postman client
+
+When client sends request to API Gateway then API Gateway will discover the correct service ip address and port using service registry to communicate and route the request that is why we have register API gateway as Eureka Client
+
+We can configure routes in two ways
+1. Using Properties
+2. Using program
+
+
+1. Using Properties
+    Adding below routing information in application.properties file of API-GATEWAY service
+    #Rouest for Employee Service
+    spring.cloud.gateway.routes[0].id=EMPLOYEE-SERVICE
+    spring.cloud.gateway.routes[0].uri=lb://EMPLOYEE-SERVICE
+    spring.cloud.gateway.routes[0].predicates[0]=Path=/api/employees/**
+
+    #Rouest for Department Service
+    spring.cloud.gateway.routes[1].id=DEPARTMENT-SERVICE
+    spring.cloud.gateway.routes[1].uri=lb://DEPARTMENT-SERVICE
+    spring.cloud.gateway.routes[1].predicates[0]=Path=/api/departments/**
+
+Configure below properties in all eureka clients to resolve machine DNS problem
+    eureka.instance.prefer-ip-address=true
+
+4. Using Spring Cloud Gateway to Automatically Creates Routes
+
+    Comment manual route information which is done in step 3
+
+    Add below properties
+
+        # Flag that enables DiscoveryClient gateway integration. Auto Configure route
+        #hence we have commented manually configured route info
+        spring.cloud.gateway.discovery.locator.enabled=true
+
+        #Option to lower case serviceId in  predicates and filters, defaults to false. 
+        #Useful with eureka when it automatically uppercases serviceId. 
+        #so MYSERIVCE, would match /myservice/**
+        spring.cloud.gateway.discovery.locator.lower-case-service-id=true
+
+        # This will help us to see debug log of route mapping
+        logging.level.org.springframework.cloud.gateway.handler.RoutePredicateHandlerMapping=DEBUG
+
+
+
+        Add service name in url
+
+        http://localhost:9191/employee-service/api/employees/2
+        http://localhost:9191/department-service/api/departments/IT
+
+
+
+We will follow creating routes manually
