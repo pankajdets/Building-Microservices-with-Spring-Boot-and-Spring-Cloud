@@ -33,6 +33,7 @@ Create Two Microservice Employee Service and Department service
 
 **Configure And Develop REST APIs in department-service**
 
+
 Setup Database connection in department-service
     Create database department_db
     Add below properties in application.properties file
@@ -439,7 +440,17 @@ now test and see if employee-service in calling both the instance of deprat-serv
 
 **Understanding API Gateway**
 
+![a1](https://user-images.githubusercontent.com/42623098/234592486-e083a200-a671-4f86-9f9a-3f51677807c2.jpg)
 
+![a2](https://user-images.githubusercontent.com/42623098/234592535-e960a94a-d372-486d-a901-525aae24d5d4.jpg)
+
+![a3](https://user-images.githubusercontent.com/42623098/234592598-61440f7c-186d-4472-9186-37959013c02b.jpg)
+
+![a4](https://user-images.githubusercontent.com/42623098/234592812-a712e581-4f17-4b06-a036-5a40524bc90c.jpg)
+
+Development Steps
+
+![a5](https://user-images.githubusercontent.com/42623098/234592918-3937f5da-b995-456c-85c1-4a7bb687f229.jpg)
 
 1. Create and Setup API Gateway Microservice
 
