@@ -454,6 +454,8 @@ Development Steps
 
 1. Create and Setup API Gateway Microservice
 
+![image](https://user-images.githubusercontent.com/42623098/234593880-6a8ba5b9-49b5-4889-aef9-1962c0ee142b.png)
+
 
 2. Register API-Gateway as Eureka Client to Eureka Server
     Add below code to application. properties file
