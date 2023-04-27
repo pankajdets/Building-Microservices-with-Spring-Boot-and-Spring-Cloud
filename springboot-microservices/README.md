@@ -533,12 +533,16 @@ Spring Cloud Config Server also help to externalize the configuration file of ea
 **Spring Cloud Config Service is nothing but spring Boot project with spring cloud config server dependency**
 
 
+![cs1](https://user-images.githubusercontent.com/42623098/234888886-ff8dca16-1b5a-437a-9066-7fdeaa1b2660.jpg)
+
 
 Development Steps:
 
+![cs2](https://user-images.githubusercontent.com/42623098/234888946-3d4882cc-00de-4664-89e6-023c014402ed.jpg)
 
 Step 1: Create Spring boot project  as Microservice(config server)
 
+![image](https://user-images.githubusercontent.com/42623098/234889035-a8fee096-be26-42c7-a1c9-5b034a5cf70f.png)
 
 
 
@@ -622,6 +626,7 @@ Step 6: Refresh Use Case- No Restart require after config changes
 
 Use Case
 
+![cs3](https://user-images.githubusercontent.com/42623098/234889383-59757b89-6fd3-4a27-853e-0b1c4d5040f0.jpg)
 
 
 To test it.
@@ -662,18 +667,22 @@ No need to start microservices(here department-service) and changes will be refr
 
 **Auto Refresh Config Changes using Spring Cloud Bus**
 
-Problem wuth the Spring Cloud Config Server:
+Problem with the Spring Cloud Config Server:
+![cs4](https://user-images.githubusercontent.com/42623098/234889668-5663d6bc-239c-454d-b44e-0e0429ee1f4f.jpg)
 
 
 
 Solution 
 
+![cs5](https://user-images.githubusercontent.com/42623098/234889722-7aa5a202-c2ec-4d85-8033-37cb168addbb.jpg)
 
 
 Development Steps
 
 
+![cs6](https://user-images.githubusercontent.com/42623098/234889774-db755fdb-2c8e-4e36-8230-2eaaae889d7c.jpg)
 
+![cs7](https://user-images.githubusercontent.com/42623098/234889884-536c5a1e-56e4-43b8-9af3-f572c0e208af.jpg)
 
 
 Step 1: Add spring-cloud-starter-bus-amqp dependency yo department-service and employee-service
@@ -735,7 +744,7 @@ Step 5: Change department-service and employee-service properties file and call 
     Noe called message REST API in department-service and employee-service and we observed that 
     without restarting department service and employee-service we are getting the configuration changes
 
-    #################################################################################################
+    ######################################################################################################################################################
 
 
                 
