@@ -724,5 +724,18 @@ Add spring.boot.message properties in employee-service.properties of git reposit
 
     Rerun department-service and employee-service
 
+Step 5: Change department-service and employee-service properties file and call /busrefresh
+
+    Updated spring.boot.message property in department-service.properties and employee-service.properties file
+
+    Now call bus refresh actuator endpoint in any of the service
+    Post request call http://localhost:8081/actuator/busrefresh
+    it will take message broker i.e rabbitmq to brodcate  the configuration changes to respective microservices
+
+    Noe called message REST API in department-service and employee-service and we observed that 
+    without restarting department service and employee-service we are getting the configuration changes
+
+    #################################################################################################
+
 
                 
