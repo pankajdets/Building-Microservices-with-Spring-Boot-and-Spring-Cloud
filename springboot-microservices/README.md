@@ -515,3 +515,214 @@ Configure below properties in all eureka clients to resolve machine DNS problem
 
 
 We will follow creating routes manually
+
+
+#####################################################################################################
+
+**Centralized Configurations using Spring Spring Cloud Config Server**
+
+Problem: Consider we have multiple microservices and in order to scale microservice we started multiple instances of each microservices. Each microservice has configuration file which contains microservice level configuration. 
+
+Now if we have requirement to update configuration file in microservice 1. Then we need to start microservice 1 and ints instances which is not a good practice. This is not agood idead that each and every time we update configuraion we start microservice and its instances.
+
+**Spring Cloud Config Server** addresses this problem. If we use Spring Cloud Config Server we don't need to restart microservices and its instances.
+
+Spring Cloud Config Server also help to externalize the configuration file of each and every microservices. We can externaliza all the config file of all the microservices in a central reposirty(say Git). We don't need to go into each microservice to update configuration. We can simple change in central git repository
+
+
+**Spring Cloud Config Service is nothing but spring Boot project with spring cloud config server dependency**
+
+
+
+Development Steps:
+
+
+Step 1: Create Spring boot project  as Microservice(config server)
+
+
+
+
+
+
+Annotate main entry point class of config-server with @EnableConfigServer
+
+Add below properties in application.properties file
+        spring.application.name=CONFIG-SERVER
+        server.port=8888
+
+
+step 2: Register, Config-Server as Eureka Client
+        Eureka Client dependecy already added. Rest it will auto configure
+
+Step 3: Setup Git location for Config Server
+        Create git repository with name "config-server-repo"
+        and below property in application.properties file to configure git location
+            spring.cloud.config.server.git.uri=https://github.com/pankajdets/config-server-repo
+        
+        Need to clone this git repository when application start up so that add below property
+            spring.cloud.config.server.git.clone-on-start=true
+
+        In git repository mainly two branch  master and main. We will keep all the configuration file in main branch
+            spring.cloud.config.server.git.default-label=main
+Step 4: Refactor Department-Service to use Config-Server
+
+        Add Config client and actuator dependecy in pom.xml of Department-Service
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-actuator</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.springframework.cloud</groupId>
+                    <artifactId>spring-cloud-starter-config</artifactId>
+                </dependency>
+        
+        Now Create Project(Service) specific configuration file in git repository.
+        Give the file name should be same as service name like department-service.properties
+        and paste configure there.We can give file name in lower case as well.
+
+
+        Now comment all the properties in application.properties file except
+            spring.application.name= DEPARTMENT-SERVICE
+        Because department-service uses this application name to load the configuarion file from config-server
+
+
+        Now need to configure config-server url in department-service so that when we start department-service it will load configuration file from config-server
+        Hence add below properties in application.properties file
+            spring.config.import=optional:configserver:http://localhost:8888
+
+
+
+Step 5: Refactor Employee-Service to use Config-Server
+
+    Add Config client and actuator dependecy in pom.xml of Employee-Service
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-actuator</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.springframework.cloud</groupId>
+                    <artifactId>spring-cloud-starter-config</artifactId>
+                </dependency>
+
+    Now Create Project(Service) specific configuration file in git repository.
+        Give the file name should be same as service name like employee-service.properties
+        and paste configure there.We can give file name in lower case as well.
+
+
+    Now comment all the properties in application.properties file except
+            spring.application.name= EMPLOYEE-SERVICE
+        Because employee-service uses this application name to load the configuarion file from config-server
+
+
+    Now need to configure config-server url in employee-service so that when we start employee-service it will load configuration file from config-server
+        Hence add below properties in application.properties file
+            spring.config.import=optional:configserver:http://localhost:8888
+
+Step 6: Refresh Use Case- No Restart require after config changes
+
+Use Case
+
+
+
+To test it.
+Add a new properties in config git repository of department-service.properties file
+    spring.boot.message=Hello, Department Service
+
+Create a new Get REST API in department-service
+
+            @RefreshScope // This anotation will force this spring bean to reload the configuration
+            @RestController
+            public class MessageController { 
+
+                @Value("${spring.boot.message}")// To read value from configuration file i.e properties file
+                private String message;
+
+                @GetMapping("message")
+                public String message(){
+                    return message;
+                }
+            }
+
+Manually call refresh end point of actuator in department-service
+
+POST call
+http://localhost:8080/actuator/refresh
+        
+#add this property in application.properties file of department-service
+#It will enable all the endpoints of Actuators
+#in order to enable /refresh endpoint in acyuator we need to add this property
+management.endpoints.web.exposure.include=*
+
+Now when we update configuration in git repository of department-service.properties file.
+We only need to restart config-server to load latest properties from git repository to config-server.
+No need to start microservices(here department-service) and changes will be refreshed in department-service using actuator refresh end point and using annotation @RefreshScope
+
+
+#####################################################################################################
+
+**Auto Refresh Config Changes using Spring Cloud Bus**
+
+Problem wuth the Spring Cloud Config Server:
+
+
+
+Solution 
+
+
+
+Development Steps
+
+
+
+
+
+Step 1: Add spring-cloud-starter-bus-amqp dependency yo department-service and employee-service
+                <dependency>
+                    <groupId>org.springframework.cloud</groupId>
+                    <artifactId>spring-cloud-starter-bus-amqp</artifactId>
+                </dependency>
+
+Step 2: Install RabbitMQ using Docker
+    install "Docker Desktop" 
+    and go to docker hub and search rabbitmq to finc latest version of rabbitmq
+
+    and come to docker desktop and run below command to pull docker image of rabbitmq to local
+        docker pull rabbitmq:3.11.0
+
+    Now lets start this docker image in docker container
+        docker run --rm -it -p 5672:5672 rabbitmq:3.11.0
+    This will start rabbitmq container on port 5672
+
+Step 3: Add RabbitMQ configuration in application.properties of department-service and employee-service
+
+        spring.rabbitmq.host=localhost
+        spring.rabbitmq.port=5672
+        spring.rabbitmq.username=guest
+        spring.rabbitmq.password=guest
+
+Step 4: Create simple REST API in employee-service
+
+        Create MessageControl class in Controller of employee-service
+
+            @RefreshScope // This anotation will force this spring bean to reload the configuration
+            @RestController
+            public class MessageController { 
+
+                @Value("${spring.boot.message}")// To read value from configuration file
+                private String message;
+
+                @GetMapping("/users/message")
+                public String message(){
+                    return message;
+                }
+                
+            }
+
+
+Add spring.boot.message properties in employee-service.properties of git repository
+        spring.boot.message=Hello, Employee Service
+
+    Rerun department-service and employee-service
+
+
+                
