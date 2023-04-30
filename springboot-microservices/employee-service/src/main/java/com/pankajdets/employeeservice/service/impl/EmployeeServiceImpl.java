@@ -13,6 +13,7 @@ import com.pankajdets.employeeservice.repository.EmployeeRepository;
 import com.pankajdets.employeeservice.service.APIClient;
 import com.pankajdets.employeeservice.service.EmployeeService;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -51,7 +52,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         return savedEmployeeDto;
         
     }
-
+    @CircuitBreaker(name ="${spring.application.name}", fallbackMethod = "getDefaultDepartment")
     @Override
     public APIResponseDto getEmployeeById(Long employeeId) {
         
@@ -86,4 +87,30 @@ public class EmployeeServiceImpl implements EmployeeService {
        return apiResponseDto;
     }
     
+    //Implement fallback method i.e getDefaultDepartment
+
+    public APIResponseDto getDefaultDepartment(Long employeeId){
+        Employee employee = employeeRepository.findById(employeeId).get();
+
+       DepartmentDto departmentDto = new DepartmentDto();
+       //set default value to object departmentDto
+       departmentDto.setDepartmentName("R&D Department");
+       departmentDto.setDepartmentCode("RD001");
+       departmentDto.setDepartmentDescription("Research and Development Department");
+
+       //Convert Employee JPA Entity to EmployeeDto
+
+       EmployeeDto employeeDto = new EmployeeDto(
+        employee.getId(),
+        employee.getFirstName(),
+        employee.getLastName(),
+        employee.getEmail(),
+        employee.getDepartmentCode()
+       );
+        
+       
+       APIResponseDto apiResponseDto = new APIResponseDto(employeeDto, departmentDto);
+       return apiResponseDto;
+
+    }
 }
