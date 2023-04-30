@@ -741,10 +741,183 @@ Step 5: Change department-service and employee-service properties file and call 
     Post request call http://localhost:8081/actuator/busrefresh
     it will take message broker i.e rabbitmq to brodcate  the configuration changes to respective microservices
 
-    Noe called message REST API in department-service and employee-service and we observed that 
+    Now called message REST API in department-service and employee-service and we observed that 
     without restarting department service and employee-service we are getting the configuration changes
 
     ######################################################################################################################################################
 
 
+**Distributed Tracing with Spring Cloud Sleuth and Zipkin**
+
+Will See Later as it is depricated in spring version 3.0
+
+
+
+
+
+
+
+##########################################################################################################################
+
+**Circuit breaker using Resileence4J Implementation**
+
+
+Reference Links Used in this Section 
+Here are the links for your reference:
+https://spring.io/projects/spring-cloud-circuitbreaker
+https://resilience4j.readme.io/
+https://resilience4j.readme.io/docs/circuitbreaker
+https://resilience4j.readme.io/docs/retry
+
+
+**What Problem Circuit Breaker Pattern Solves?**
+
+The Circuit Breaker pattern is a popular design pattern used in Microservices Architecture, that falls under the Sustainable Design Patterns category. In Microservices architecture, a service usually calls other services to retrieve data, and there is the chance that the downstream service may be down. It may be cause by slow network connection, timeouts, or temporal unavailability. Therefore, retrying calls can solve the issue. However, if there is a severe issue on a particular microservice, then it will be unavailable for a longer time. In such case, the request will be continuously sent to that service, since the client doesn’t have any knowledge about a particular service being down. As a result, the network resources will be exhausted with low performance and bad user experience. Also, the failure of one service might lead to Cascading failures throughout the application.
+
+Therefore, you can use the Circuit Breaker Design Pattern to overcome this problem.
+
+
+Problem
+
+Assume microservice call chain and if microservice M4 is down for some reason
+ client -> M1 -> M2 -> M3 -> M4
+
+Below Approach can provide the solution for this problem
+
+1. Fallback method mechanism: Whenever microservice M4 goes down then microservice M3 will return some default response to microservice M2. In this way we can avoid cascade failure
+
+2.  Circuit breaker pattern: When microservice M4 goes down then it won't allow M3 to hit M4 continuously. This approach will Save lots of resources and avoid continuous calls from microservice M3 to M4.
+
+3. Retry mechanism: if microservice M4 is temporarly down , then we can implement retry mechanism.
+example Retry 5 means M3 will try to communicate with M4 5 times. if M4 up by then it will get success response.
+
+4. Rate Limiter: This pattern will limit number of calls from microservice M3 to M4
+
+
+
+
+Circuit Breaker Design Pattern:
+
+
+Therefore, you can use the Circuit Breaker Design Pattern to overcome this problem. With the help of this pattern, the client will invoke a remote service through a proxy. This proxy will basically behave as an electrical circuit breaker. So, when the number of failures crosses the threshold number, the circuit breaker trips for a particular time period. Then, all the attempts to invoke the remote service will fail within this timeout period. After the timeout expires, the circuit breaker allows a limited number of test requests to pass through it. If those requests succeed, the circuit breaker resumes back to the normal operation. Otherwise, if there is a failure, the timeout period begins again.
+
+The Circuit Breaker Design pattern have three states:
+
+1. Closed
+2. Open
+3. Half-Open
+
+
+Add flow diagram
+
+
+
+Development Steps
+
+
+
+
+Step 1: Add all the require dependency
+        Add into employee-service
+    <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-circuitbreaker-resilience4j</artifactId>
+    </dependency>
+
+    <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+    <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+    </dependency>
+
+
+Step 2: Using @CircuitBreaker annotation to a method(It is internally calling external service)
+    Annotate getEmployeeById() method in EmployeeServiceImp  by below annotation
+        @CircuitBreaker(name ="${spring.application.name}", fallbackMethod = "getDefaultDepartment")
+
+
+Step 3: Implement fallback method i.e getDefaultDepartment here
+        implement it in EMployeeServiceImpl class
+
+            //Implement fallback method i.e getDefaultDepartment
+
+            public APIResponseDto getDefaultDepartment(Long employeeId){
+                Employee employee = employeeRepository.findById(employeeId).get();
+
+            DepartmentDto departmentDto = new DepartmentDto();
+            //set default value to object departmentDto
+            departmentDto.setDepartmentName("R&D Department");
+            departmentDto.setDepartmentCode("RD001");
+            departmentDto.setDepartmentDescription("Research and Development Department");
+
+            //Convert Employee JPA Entity to EmployeeDto
+
+            EmployeeDto employeeDto = new EmployeeDto(
+                employee.getId(),
+                employee.getFirstName(),
+                employee.getLastName(),
+                employee.getEmail(),
+                employee.getDepartmentCode()
+            );
                 
+            
+            APIResponseDto apiResponseDto = new APIResponseDto(employeeDto, departmentDto);
+            return apiResponseDto;
+
+            }
+
+Step 4: Add circuit breaker configuration in application.properties file
+
+            #Actuator endpoints for Circuit Breaker
+            management.health.circuitbreaker.enabled=true
+            management.endpoints.web.exposure.include=health
+            management.endpoint.health.show-details=always
+
+            #Circuilt Breaker Configuration
+            resilience4j.circuitbreaker.instance.EMPLOYEE-SERVICE.registerHealthIndicator=true
+            resilience4j.circuitbreaker.instance.EMPLOYEE-SERVICE.failureRateThreshold=50
+            resilience4j.circuitbreaker.instance.EMPLOYEE-SERVICE.minimumNumberOfCalls=5
+            resilience4j.circuitbreaker.instance.EMPLOYEE-SERVICE.automaticTransitionFromOpenToHalfOpenEnabled=true
+            resilience4j.circuitbreaker.instance.EMPLOYEE-SERVICE.waitDurationInOpenState=5s
+            resilience4j.circuitbreaker.instance.EMPLOYEE-SERVICE.permittedNumberOfCallsInHalfOpenState=3
+            resilience4j.circuitbreaker.instance.EMPLOYEE-SERVICE.slidingWindowSize=10
+            resilience4j.circuitbreaker.instance.EMPLOYEE-SERVICE.slidingWindowType=COUNT_BASED
+
+Step 5: Restart employee-service and test
+
+
+**Retry Pattern implementation using Rejilience4j**
+
+Development Steps
+
+
+Step 1: Using @Retry annotation to a method(it is calling to external service)
+
+    comment @CircuitBreaker annotation
+    //@CircuitBreaker(name ="${spring.application.name}", fallbackMethod = "getDefaultDepartment")
+     Annotate getEmployeeById() method in EmployeeServiceImp  by below annotation
+    @Retry(name ="${spring.application.name}", fallbackMethod = "getDefaultDepartment")
+
+Step 2: Fallback method implementation
+    Already done
+
+Step 3: Add Retry configuration in application.properties file
+    #Retry Configuration
+    #resilience4j.retry.instances.EMPLOYEE-SERVICE.registerHealthIndicator=true
+    resilience4j.retry.instances.EMPLOYEE-SERVICE.maxAttempts=5
+    resilience4j.retry.instances.EMPLOYEE-SERVICE.waitDuration=1s
+
+Add loggers to check logs and validate
+
+        private static final Logger LOGGER = LogManager.getLogger(EmployeeServiceImpl.class);
+
+        //Check if department-service is down then it logs 5 times means trying to call getEmployeeById() method 5 times
+        LOGGER.info("inside getEmployeeById() method");
+
+        //and after 5 retry it will call fallback method i.e getDefaultDepartment()
+        LOGGER.info("inside getDefaultDepartment() method");
+
+###################################################################################################################
