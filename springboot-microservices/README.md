@@ -801,6 +801,8 @@ Circuit Breaker Design Pattern:
 
 Therefore, you can use the Circuit Breaker Design Pattern to overcome this problem. With the help of this pattern, the client will invoke a remote service through a proxy. This proxy will basically behave as an electrical circuit breaker. So, when the number of failures crosses the threshold number, the circuit breaker trips for a particular time period. Then, all the attempts to invoke the remote service will fail within this timeout period. After the timeout expires, the circuit breaker allows a limited number of test requests to pass through it. If those requests succeed, the circuit breaker resumes back to the normal operation. Otherwise, if there is a failure, the timeout period begins again.
 
+![c1](https://user-images.githubusercontent.com/42623098/235362847-4288162f-bc2f-4613-b639-88dc9d1fe900.jpg)
+
 The Circuit Breaker Design pattern have three states:
 
 1. Closed
@@ -808,11 +810,14 @@ The Circuit Breaker Design pattern have three states:
 3. Half-Open
 
 
-Add flow diagram
+
+![c2](https://user-images.githubusercontent.com/42623098/235362867-e9243e2c-8572-4f2f-8a37-b9b4154a3e29.jpg)
 
 
 
 Development Steps
+
+![c3](https://user-images.githubusercontent.com/42623098/235362884-32d48722-351d-4b30-b340-5c29c2be3537.jpg)
 
 
 
@@ -891,7 +896,11 @@ Step 5: Restart employee-service and test
 
 **Retry Pattern implementation using Rejilience4j**
 
+![c4](https://user-images.githubusercontent.com/42623098/235362911-a17a32ec-f3fc-4459-a939-4cf542911bb8.jpg)
+
 Development Steps
+
+![c5](https://user-images.githubusercontent.com/42623098/235362925-78262f52-59d0-42e7-9395-03df88349751.jpg)
 
 
 Step 1: Using @Retry annotation to a method(it is calling to external service)
