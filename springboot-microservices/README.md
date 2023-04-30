@@ -933,10 +933,15 @@ Add loggers to check logs and validate
 
 **Add New Organization Microservice to existing Project**
 
+![d1](https://user-images.githubusercontent.com/42623098/235374748-4b45f428-f709-42ec-bef6-84bbbf8d5c57.jpg)
+
 Development steps
+
+![d2](https://user-images.githubusercontent.com/42623098/235374760-b3104d4b-6f86-44c2-a6f8-3f6ba30c9705.jpg)
 
 Step 1: Create Organization Service using Spring Boot
 
+![image](https://user-images.githubusercontent.com/42623098/235374771-2dc321d1-30b2-4089-8212-dde6cef54cbf.png)
 
 Step 2: Configure MySQL
     Create database organization_db
@@ -983,6 +988,8 @@ Step 5: Build save Organization REST API
 Step 6: Build get Organization By organization code REST API
 step 7: Make REST API call from Employee-Service to Organization-service
     Requirement
+    
+![d3](https://user-images.githubusercontent.com/42623098/235374834-39034b1a-dc98-45a4-9a26-f663c85dcb2c.jpg)
 
 
     Add an attribute organizationCode in Employee JPA Entity
@@ -1008,6 +1015,9 @@ Step 9 : Refactor Organization-service to use Config-Server
     Configure config-server url in organization-service
         spring.config.import=optional:configserver:http://localhost:8888
     Rerun config-server and organization-service to reflect changes
+
+![image](https://user-images.githubusercontent.com/42623098/235374883-1da1f04f-b429-42e6-af13-e39037ce02a0.png)
+
 
 Step 10: Configure Spring Cloud Bus
         Add bus dependency
@@ -1041,6 +1051,7 @@ Step 11: Configure Routes for Orgnization-Service in API-Gateway
         Add below property in organization-service
             eureka.instance.prefer-ip-address=true
         Rerun API-Gateway and organizatyion-service to reflect changes
+
 
 
 ###################################################################################################################
