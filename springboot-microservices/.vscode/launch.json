@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "OrganizationServiceApplication",
+            "request": "launch",
+            "mainClass": "com.pankajdets.organizationservice.OrganizationServiceApplication",
+            "projectName": "organization-service"
+        },
+        {
+            "type": "java",
             "name": "Spring Boot-DepartmentServiceApplication<department-service>",
             "request": "launch",
             "cwd": "${workspaceFolder}",

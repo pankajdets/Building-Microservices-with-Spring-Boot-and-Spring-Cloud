@@ -11,6 +11,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import com.pankajdets.employeeservice.dto.APIResponseDto;
 import com.pankajdets.employeeservice.dto.DepartmentDto;
 import com.pankajdets.employeeservice.dto.EmployeeDto;
+import com.pankajdets.employeeservice.dto.OrganizationDto;
 import com.pankajdets.employeeservice.entity.Employee;
 import com.pankajdets.employeeservice.mapper.EmployeeMapper;
 import com.pankajdets.employeeservice.repository.EmployeeRepository;
@@ -28,7 +29,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private static final Logger LOGGER = LogManager.getLogger(EmployeeServiceImpl.class);
     private EmployeeRepository employeeRepository;
     //private RestTemplate restTemplate; //Constructor based dependency injection
-    //private WebClient webClient;
+    private WebClient webClient;
 
     private APIClient apiClient;
 
@@ -67,15 +68,23 @@ public class EmployeeServiceImpl implements EmployeeService {
         //         .bodyToMono(DepartmentDto.class)
         //         .block();
 
-        // Below  code is for Open Feign communication
+        // Below  code is for Open Feign communication (Calling getDepartment REST API )
         DepartmentDto departmentDto = apiClient.getDepartment(employee.getDepartmentCode());
+
+        // Below  code is for WebClient communication(Calling getOrganization REST API )
+        OrganizationDto organizationDto = webClient.get()
+                .uri("http://localhost:8083/api/organizations/"+employee.getOrganizationCode())
+                .retrieve()
+                .bodyToMono(OrganizationDto.class)
+                .block();
+
 
        //Convert Employee JPA Entity to EmployeeDto
 
        EmployeeDto employeeDto = EmployeeMapper.mapToEmployeeDto(employee);
         
        
-       APIResponseDto apiResponseDto = new APIResponseDto(employeeDto, departmentDto);
+       APIResponseDto apiResponseDto = new APIResponseDto(employeeDto, departmentDto, organizationDto);
        return apiResponseDto;
     }
     
@@ -97,7 +106,9 @@ public class EmployeeServiceImpl implements EmployeeService {
        EmployeeDto employeeDto = EmployeeMapper.mapToEmployeeDto(employee);
         
        
-       APIResponseDto apiResponseDto = new APIResponseDto(employeeDto, departmentDto);
+       APIResponseDto apiResponseDto = new APIResponseDto();
+       apiResponseDto.setEmployee(employeeDto);
+       apiResponseDto.setDepartment(departmentDto);
        return apiResponseDto;
 
     }

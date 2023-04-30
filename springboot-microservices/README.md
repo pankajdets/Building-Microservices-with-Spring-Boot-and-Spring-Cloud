@@ -930,3 +930,117 @@ Add loggers to check logs and validate
         LOGGER.info("inside getDefaultDepartment() method");
 
 ###################################################################################################################
+
+**Add New Organization Microservice to existing Project**
+
+Development steps
+
+Step 1: Create Organization Service using Spring Boot
+
+
+Step 2: Configure MySQL
+    Create database organization_db
+    Add below properties in pom.xml
+        spring.datasource.url=jdbc:mysql://localhost:3306/organization_db
+        spring.datasource.username= root
+        spring.datasource.password=Munnu@10Oct
+
+        spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
+        spring.jpa.hibernate.ddl-auto=update
+
+        server.port= 8083
+        
+Step 3 : Create Organization JPS Entity and Sping Data JPA Repository
+        Entity
+                @Getter
+                @Setter
+                @AllArgsConstructor
+                @NoArgsConstructor
+                @Entity
+                @Table(name = "organizations")
+                public class Organization {
+                    @Id
+                    @GeneratedValue(strategy = GenerationType.IDENTITY)
+                    private Long id;
+                    @Column(nullable = false)
+                    private String organizationName;
+                    private String organizationDescription;
+                    @Column(nullable = false, unique = true)
+                    private String organizationCode;
+                    @CreationTimestamp
+                    private LocalDateTime createdDate;
+                }
+
+    Repository
+
+        public interface OrganizationRepository extends JpaRepository<Organization, Long> {
+            
+        }
+
+Step 4: Create OrganizationDto and OrganizationMapper
+
+Step 5: Build save Organization REST API
+Step 6: Build get Organization By organization code REST API
+step 7: Make REST API call from Employee-Service to Organization-service
+    Requirement
+
+
+    Add an attribute organizationCode in Employee JPA Entity
+    update EmployeeDto class
+    update EmployeeMapper class
+    Finally refactor EmployeeServiceImpl class and call get Organization REST API from Employee-Service
+    Test
+
+Step 8: Register Organization-Service as Eureka Client
+        Add spring cloud dependency 
+        Add Eureka Client dependency
+        set application name(Spring.application.name=ORGANIZATION-SERVICE)
+
+Step 9 : Refactor Organization-service to use Config-Server
+    Add dependency
+        <dependency>
+                    <groupId>org.springframework.cloud</groupId>
+                    <artifactId>spring-cloud-starter-config</artifactId>
+         </dependency>
+
+    create organization-service.properties file in centralized git repository and pate all the properties except application name
+
+    Configure config-server url in organization-service
+        spring.config.import=optional:configserver:http://localhost:8888
+    Rerun config-server and organization-service to reflect changes
+
+Step 10: Configure Spring Cloud Bus
+        Add bus dependency
+                <dependency>
+                    <groupId>org.springframework.cloud</groupId>
+                    <artifactId>spring-cloud-starter-bus-amqp</artifactId>
+                </dependency>
+        Need to add Actuator dependency
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-actuator</artifactId>
+                </dependency>
+        Next we need to add rabbitmq configuration in application.properties file
+        By default, Spring Cloud bus uses rannitmq as message broker to broadcaste the events
+                spring.rabbitmq.host=localhost
+                spring.rabbitmq.port=5672
+                spring.rabbitmq.username=guest
+                spring.rabbitmq.password=guest
+
+        Next, We need to enable spring boot actuator endpoints. We need to call /busrefresh actuator need point 
+                management.endpoints.web.exposure.include=*
+
+Step 11: Configure Routes for Orgnization-Service in API-Gateway
+
+        Add below properties in API-Gateway to configure routes for organization-service
+            #Rouest for Organization Service
+            spring.cloud.gateway.routes[2].id=ORGANIZATION-SERVICE
+            spring.cloud.gateway.routes[2].uri=lb://ORGANIZATION-SERVICE
+            spring.cloud.gateway.routes[2].predicates[0]=Path=/api/organizations/**
+
+        Add below property in organization-service
+            eureka.instance.prefer-ip-address=true
+        Rerun API-Gateway and organizatyion-service to reflect changes
+
+
+###################################################################################################################
