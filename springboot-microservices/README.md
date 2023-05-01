@@ -1342,6 +1342,8 @@ Step 5: Push Docker Image to DockerHub
     docker images
     docker push panksjdets/springboot-docker-demo: 0.1.RELEASE
 
+    To remove doker image
+    docker rmi imageId
 
 Step 6: Pull Docker Image from DockerHub and run in docker container
     docker pull pankajdets/springboot-docker-demo:0.1.RELEASE
@@ -1359,4 +1361,147 @@ Step 6: Pull Docker Image from DockerHub and run in docker container
 
 #####################################################################################################################
 **Dockerizing Spring Boot MySQl Application Using Docker Network**
+Dockerizing springboot-restful-webservices-using-Dto application. It is using MySql database
 
+Pull mysql image from docker hub
+    docker pull mysql
+    docker images
+
+Create docker Network 
+    we want my springboot application container to communicate with mysql container so that we need to deploy both in same docker Network
+
+    docker network create springboot-mysql-net
+
+    To list out all the docker network
+    docker network ls
+
+    In bridge type of network two container can communicate with each other
+
+Run mysql docker image in docker container
+    docker run --name mysqldb --network springboot-mysql-net -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABAE=employee_db -d mysql
+
+    To see all running container
+    docker ps
+
+    docker exec -it containerID bash
+
+    in bash
+    mysql -u root -p
+    enter root password and it will open mysql command line
+
+Create Dockerfile in springbootb application root folder and Build image 
+first generate jar file
+    mvn clean package 
+
+
+Dockerfile
+
+        FROM eclipse-temurin:17
+
+        //Meta Deta
+        LABEL mentainer = "pankajdets@gmail.com"
+
+        //whenever we run the container. app directory wii be created in the container
+        WORKDIR /app
+
+        //copy this jar file to app folder in the container and rename the jar filr to springboot-docker-demo.jar
+        COPY target/jarfilename.jar  /app/springboot-docker-demo.jar
+
+        //entrypoint to run the jar file 
+        ENTRYPOINT["java", "-jar", "springboot-docker-demo.jar"]
+
+active docker profile in springboot application
+    Add below property in application.properties file
+            spring.profiles.active=docker
+
+create new properties file for docker profiling 
+file name: application-docker.properties
+            #JBC url to connect with url
+            #employee_db is database name which we have already in mysqldb docker container
+            #we have already created docker container with name mysqldb and root password is set to root
+            spring.datasource.url=jdbc:mysql://mysqldb:3306/employee_db
+            spring.datasource.username=root
+            spring.datasource.password=root
+
+            #Hibernare Dialect: Hibernate will use this dialect to create appropriate SQL statement with respect to database
+            spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+            #This property tells Hibernate that create table automatically if tables are not exists. I
+            #if tables are already in the database then change or alter the table as per the jpa entity mapping changes 
+            spring.jpa.hibernate.ddl-auto=update
+
+
+
+            # *will enable all the actuator endpoints
+            management.endpoints.web.exposure.include=*
+            management.info.env.enabled=true
+            management.endpoint.health.show-details=always
+            Management.endpoint.shutdown.enabled=true
+
+            info.app.name=Spring Boot Restful Web Services
+            info.app.description=Spring Boot Restful Web Service Demo
+            info.app.version=1.0.0
+
+build docker image 
+    docker build -t pringboot-restful-webservices .
+    docker images
+
+
+Run Spring Boot App Docker Image in a  container and Test CRUD APIs
+
+    docker run --network springboot-mysql-net --name springboot-mysql-container -p 8080:8080 springboot-restful-webservices
+
+
+To run in deatached mode
+
+    docker run --network springboot-mysql-net --name springboot-mysql-container -p 8080:8080 -d springboot-restful-webservices
+
+
+To see logs
+    docker logs -f containerID
+
+Now Test RESTAPI using postman client
+
+############################################################################################################################
+**Dockerizing Spring Boot MySQL Application Using Docker Compose**
+
+Tool to defining and starting multi container docker application
+
+Using single command we can start all the services
+
+docker-compose.yml
+
+    version: "3.8"
+    services:
+    mysqldb:
+        container_name: mysqldb
+        image: mysql
+        environment:
+        MYSQL_ROOT_PASSWORD: root
+        MYSQL_DATABASE: employeedb
+        networks:
+        springboot-mysql-net:
+    springboot-restful-webservices: 
+        container_name: springboot-restful-webservices
+        build:
+        context: .
+        dockerfile: Dockerfile
+        ports:
+        - "8080:8080"
+        depends_on:
+        - mysqldb
+        networks:
+        springboot-mysql-net:
+        restart: on-failure
+        
+    networks:
+    springboot-mysql-net:
+
+
+
+run command: docker-compose up -d --build
+
+
+Test REST API and logs
+
+
+#########################################################################################################################################
