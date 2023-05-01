@@ -1253,3 +1253,110 @@ Step 4: Customizing Swagger Models Documentation with Annotations(DepartmentDto)
     implement same way as Department-Service
 
 
+
+##############################################################################################################
+**Dockering Spring Boot Application Step by Step**
+
+
+Dockerfile: It a text file contains all the instructions to build docker image
+Docker Container: Runnning instance of Docker image
+Docker Hub: Online Cloud Repository. Anybody from anywhere can pull the docker image from docker hub and run it
+
+Step 1: Create basic Spring boot Application
+
+Step 2: Create Dockerfile in root directory of Spring Boot Project
+
+        FROM eclipse-temurin:17
+
+        //Meta Deta
+        LABEL mentainer = "pankajdets@gmail.com"
+
+        //whenever we run the container. app directory wii be created in the container
+        WORKDIR /app
+
+        //copy this jar file to app folder in the container and rename the jar filr to springboot-docker-demo.jar
+        COPY target/jarfilename.jar  /app/springboot-docker-demo.jar
+
+        //entrypoint to run the jar file 
+        ENTRYPOINT["java", "-jar", "springboot-docker-demo.jar"]
+
+
+Step 3: Build image using Dockerfile
+    docker build -t springboot-docker-demo .
+    docker build -t docker-image-name Dockerfile-location
+
+    Here -t is used to tag image name "springboot-docker-demo" and . represent present working directory
+
+    This command will execute step by step instructions writtern in Dockerfile and build image and store into local machine
+
+    To check all the docker images in local machine hit
+    docker images
+
+    By default image will take latest tag
+    To give tag (0.1.RELEASE) to docker image run 
+
+    docker build -t springboot-docker-demo:0.1.RELEASE  .
+
+
+Step 4: Run docker image in a docker container
+    docker run -p 8080:8080 springboot-docker-demo
+    docker run -p hostOperatingSystemPort : containerPort imageName
+
+    -p to map port(mapping container port with host operating system port)
+
+    Now docker image is running in doker container
+    Inodert to access we need host Operating System port
+    http://localhost:8080
+
+
+    if we run command docker run -p 8081:8080 springboot-docker-demo
+    menas we are mapping container port 8080 to host operating system port 8081 hence we can access it at 
+    http://localhost:8081
+
+
+        To check running containers hit
+        docker ps 
+
+        To run docker container in deatched mode(means docker container will run in background)- It will give dockerId
+        docker run -p 8081:8080 -d springboot-docker-demo
+
+        To get logs of docker container
+        docker logs -f dockerId
+
+        To stop running docker container
+        docker stop dockerId
+
+Step 5: Push Docker Image to DockerHub
+    Create Account in DockerHub
+
+    Inorder to push docker image to dockerHub we first need to login to dockerHub through terminal
+
+    docker login
+
+    it will ask username and password. provide dockerHub username and password
+    once login succeeded
+
+    Command to tag local docker image to repository in docker hub
+    docker tag springboot-docker-demo pankajdets/springboot-docker-demo:0.1.RELEASE
+
+    docker images
+    docker push panksjdets/springboot-docker-demo: 0.1.RELEASE
+
+
+Step 6: Pull Docker Image from DockerHub and run in docker container
+    docker pull pankajdets/springboot-docker-demo:0.1.RELEASE
+
+    docker run -p 3307:3306 --name localhost -e MYSQL_ROOT_PASSWORD=Munnu@10Oct -e MYSQL_DATABASE=employee_db
+    -e MYSQL_USER=root  -d mysql:latest
+
+    run in deatahed mode
+
+    docker exec -it localhost bash
+
+    in bash
+    mysql -u root -p
+        show databases;
+
+#####################################################################################################################
+**Dockerizing Spring Boot MySQl Application Using Docker Network**
+
