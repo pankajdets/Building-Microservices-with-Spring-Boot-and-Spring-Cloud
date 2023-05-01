@@ -1,4 +1,4 @@
-################### Apache Kafka Basic ##########################################################################
+################### Apache Kafka Basic ######################################################
 
 It ia an open-source distributed event streaming platform used by thousands of companies
 for high -performance data pipelines, streaming analytics, data integration, and mission-critical 
@@ -6,11 +6,29 @@ application.
 
 Initially built by Linkedin later managed by Apache foundation
 
+![k1](https://user-images.githubusercontent.com/42623098/235530737-af8b3a73-5195-4a5a-92c5-78f9cd0da820.jpg)
+
+
 
 **Basic Terms related to Kafka**
 
+![k2](https://user-images.githubusercontent.com/42623098/235530803-7e43b87f-74a6-41f1-bd2e-58131f083e5a.jpg)
+
+![k3](https://user-images.githubusercontent.com/42623098/235530833-3386a432-1445-48a3-b6ea-e00dd7498847.jpg)
 
 
+![k4](https://user-images.githubusercontent.com/42623098/235530863-57e09d33-23bf-4939-86b6-9744ac479c6f.jpg)
+
+
+![k5](https://user-images.githubusercontent.com/42623098/235530896-faa3b90f-3043-447d-93d9-f481f1fecf89.jpg)
+
+![k6](https://user-images.githubusercontent.com/42623098/235530921-804d53e8-3d07-4acd-a089-7638fba1cb85.jpg)
+
+![k7](https://user-images.githubusercontent.com/42623098/235530958-eeb8fbc9-7edd-4e93-8c44-a3f121259ea2.jpg)
+
+![k8](https://user-images.githubusercontent.com/42623098/235530992-77d606b2-e2c7-4a0e-815a-46c6f14b4e72.jpg)
+
+![k9](https://user-images.githubusercontent.com/42623098/235531019-d57df240-d14d-4c12-b8c1-2fb0693119e3.jpg)
 
 
 STEP 1: DOWNLOAD AND INSTALL KAFKA
@@ -39,6 +57,9 @@ topic demo
 
 ####################################################################################################################
 **Use kafka in Spring Boot Application**
+
+![k10](https://user-images.githubusercontent.com/42623098/235531220-02d8be08-6431-4e50-96e2-3d6ef421f2ef.jpg)
+
 Step 1: Create and Setup Spring Boot Project
 
 Step 2: Configure Kafka Producer and Consumer
