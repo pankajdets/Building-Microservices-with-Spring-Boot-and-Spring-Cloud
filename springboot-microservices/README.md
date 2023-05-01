@@ -1058,6 +1058,8 @@ Step 11: Configure Routes for Orgnization-Service in API-Gateway
 
 **Creating React Frontend Microservice**
 
+![Re1](https://user-images.githubusercontent.com/42623098/235428690-476f1399-11d8-4595-933b-26bcb3a11c48.jpg)
+
 React is javascript library used to develop user interfaces. It is developed by Facebook
 React is used to develop single page application
 React don't have ability to make Http Request. In order to make Http Request in React application,
@@ -1066,6 +1068,7 @@ We have to use a third party Http library i.e (axios library)
 
 Development Steps
 
+![Re2](https://user-images.githubusercontent.com/42623098/235428720-86c3dad0-3107-48ab-8fc1-03ef5941118f.jpg)
 
 Step 1: Create React App using Create React App tool
 
