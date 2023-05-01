@@ -1246,6 +1246,266 @@ health checks.
 
 ##########################################################################################################
 
+**Dockering Spring Boot Application Step by Step**
+
+![do1](https://user-images.githubusercontent.com/42623098/235493051-ee29cd84-981f-4602-8e33-62028d8a9fd4.jpg)
+
+Dockerfile: It a text file contains all the instructions to build docker image
+Docker Container: Runnning instance of Docker image
+Docker Hub: Online Cloud Repository. Anybody from anywhere can pull the docker image from docker hub and run it
+
+![do2](https://user-images.githubusercontent.com/42623098/235493074-4f0104c7-6a21-4f2d-a2ab-d94b563495ad.jpg)
+
+
+Step 1: Create basic Spring boot Application
+
+Step 2: Create Dockerfile in root directory of Spring Boot Project
+
+        FROM eclipse-temurin:17
+
+        //Meta Deta
+        LABEL mentainer = "pankajdets@gmail.com"
+
+        //whenever we run the container. app directory wii be created in the container
+        WORKDIR /app
+
+        //copy this jar file to app folder in the container and rename the jar filr to springboot-docker-demo.jar
+        COPY target/jarfilename.jar  /app/springboot-docker-demo.jar
+
+        //entrypoint to run the jar file 
+        ENTRYPOINT["java", "-jar", "springboot-docker-demo.jar"]
+
+
+Step 3: Build image using Dockerfile
+    docker build -t springboot-docker-demo .
+    docker build -t docker-image-name Dockerfile-location
+
+    Here -t is used to tag image name "springboot-docker-demo" and . represent present working directory
+
+    This command will execute step by step instructions writtern in Dockerfile and build image and store into local machine
+
+    To check all the docker images in local machine hit
+    docker images
+
+    By default image will take latest tag
+    To give tag (0.1.RELEASE) to docker image run 
+
+    docker build -t springboot-docker-demo:0.1.RELEASE  .
+
+
+Step 4: Run docker image in a docker container
+    docker run -p 8080:8080 springboot-docker-demo
+    docker run -p hostOperatingSystemPort : containerPort imageName
+
+    -p to map port(mapping container port with host operating system port)
+
+    Now docker image is running in doker container
+    Inodert to access we need host Operating System port
+    http://localhost:8080
+
+
+    if we run command docker run -p 8081:8080 springboot-docker-demo
+    menas we are mapping container port 8080 to host operating system port 8081 hence we can access it at 
+    http://localhost:8081
+
+
+        To check running containers hit
+        docker ps 
+
+        To run docker container in deatched mode(means docker container will run in background)- It will give dockerId
+        docker run -p 8081:8080 -d springboot-docker-demo
+
+        To get logs of docker container
+        docker logs -f dockerId
+
+        To stop running docker container
+        docker stop dockerId
+
+Step 5: Push Docker Image to DockerHub
+    Create Account in DockerHub
+
+    Inorder to push docker image to dockerHub we first need to login to dockerHub through terminal
+
+    docker login
+
+    it will ask username and password. provide dockerHub username and password
+    once login succeeded
+
+    Command to tag local docker image to repository in docker hub
+    docker tag springboot-docker-demo pankajdets/springboot-docker-demo:0.1.RELEASE
+
+    docker images
+    docker push panksjdets/springboot-docker-demo: 0.1.RELEASE
+
+    To remove doker image
+    docker rmi imageId
+
+Step 6: Pull Docker Image from DockerHub and run in docker container
+    docker pull pankajdets/springboot-docker-demo:0.1.RELEASE
+
+    docker run -p 3307:3306 --name localhost -e MYSQL_ROOT_PASSWORD=Munnu@10Oct -e MYSQL_DATABASE=employee_db
+    -e MYSQL_USER=root  -d mysql:latest
+
+    run in deatahed mode
+
+    docker exec -it localhost bash
+
+    in bash
+    mysql -u root -p
+        show databases;
+
+#####################################################################################################################
+**Dockerizing Spring Boot MySQl Application Using Docker Network**
+Dockerizing springboot-restful-webservices-using-Dto application. It is using MySql database
+
+![do3](https://user-images.githubusercontent.com/42623098/235493235-e637f5ab-061a-4dd0-96b3-973c560fe288.jpg)
+
+
+Pull mysql image from docker hub
+    docker pull mysql
+    docker images
+
+Create docker Network 
+    we want my springboot application container to communicate with mysql container so that we need to deploy both in same docker Network
+
+    docker network create springboot-mysql-net
+
+    To list out all the docker network
+    docker network ls
+
+    In bridge type of network two container can communicate with each other
+
+Run mysql docker image in docker container
+    docker run --name mysqldb --network springboot-mysql-net -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABAE=employee_db -d mysql
+
+    To see all running container
+    docker ps
+
+    docker exec -it containerID bash
+
+    in bash
+    mysql -u root -p
+    enter root password and it will open mysql command line
+
+Create Dockerfile in springbootb application root folder and Build image 
+first generate jar file
+    mvn clean package 
+
+
+Dockerfile
+
+        FROM eclipse-temurin:17
+
+        //Meta Deta
+        LABEL mentainer = "pankajdets@gmail.com"
+
+        //whenever we run the container. app directory wii be created in the container
+        WORKDIR /app
+
+        //copy this jar file to app folder in the container and rename the jar filr to springboot-docker-demo.jar
+        COPY target/jarfilename.jar  /app/springboot-docker-demo.jar
+
+        //entrypoint to run the jar file 
+        ENTRYPOINT["java", "-jar", "springboot-docker-demo.jar"]
+
+active docker profile in springboot application
+    Add below property in application.properties file
+            spring.profiles.active=docker
+
+create new properties file for docker profiling 
+file name: application-docker.properties
+            #JBC url to connect with url
+            #employee_db is database name which we have already in mysqldb docker container
+            #we have already created docker container with name mysqldb and root password is set to root
+            spring.datasource.url=jdbc:mysql://mysqldb:3306/employee_db
+            spring.datasource.username=root
+            spring.datasource.password=root
+
+            #Hibernare Dialect: Hibernate will use this dialect to create appropriate SQL statement with respect to database
+            spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+            #This property tells Hibernate that create table automatically if tables are not exists. I
+            #if tables are already in the database then change or alter the table as per the jpa entity mapping changes 
+            spring.jpa.hibernate.ddl-auto=update
+
+
+
+            # *will enable all the actuator endpoints
+            management.endpoints.web.exposure.include=*
+            management.info.env.enabled=true
+            management.endpoint.health.show-details=always
+            Management.endpoint.shutdown.enabled=true
+
+            info.app.name=Spring Boot Restful Web Services
+            info.app.description=Spring Boot Restful Web Service Demo
+            info.app.version=1.0.0
+
+build docker image 
+    docker build -t pringboot-restful-webservices .
+    docker images
+
+
+Run Spring Boot App Docker Image in a  container and Test CRUD APIs
+
+    docker run --network springboot-mysql-net --name springboot-mysql-container -p 8080:8080 springboot-restful-webservices
+
+
+To run in deatached mode
+
+    docker run --network springboot-mysql-net --name springboot-mysql-container -p 8080:8080 -d springboot-restful-webservices
+
+
+To see logs
+    docker logs -f containerID
+
+Now Test RESTAPI using postman client
+
+############################################################################################################################
+**Dockerizing Spring Boot MySQL Application Using Docker Compose**
+
+Tool to defining and starting multi container docker application
+
+Using single command we can start all the services
+
+![do4](https://user-images.githubusercontent.com/42623098/235493326-c5a30904-f2ab-4308-aa0b-8910bb1bc95d.jpg)
+
+
+docker-compose.yml
+
+    version: "3.8"
+    services:
+    mysqldb:
+        container_name: mysqldb
+        image: mysql
+        environment:
+        MYSQL_ROOT_PASSWORD: root
+        MYSQL_DATABASE: employeedb
+        networks:
+        springboot-mysql-net:
+    springboot-restful-webservices: 
+        container_name: springboot-restful-webservices
+        build:
+        context: .
+        dockerfile: Dockerfile
+        ports:
+        - "8080:8080"
+        depends_on:
+        - mysqldb
+        networks:
+        springboot-mysql-net:
+        restart: on-failure
+        
+    networks:
+    springboot-mysql-net:
+
+
+
+run command: docker-compose up -d --build
+
+
+Test REST API and logs
+
+
+#########################################################################################################################################
 
 
 
