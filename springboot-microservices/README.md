@@ -1055,3 +1055,103 @@ Step 11: Configure Routes for Orgnization-Service in API-Gateway
 
 
 ###################################################################################################################
+
+**Creating React Frontend Microservice**
+
+React is javascript library used to develop user interfaces. It is developed by Facebook
+React is used to develop single page application
+React don't have ability to make Http Request. In order to make Http Request in React application,
+We have to use a third party Http library i.e (axios library)
+
+
+Development Steps
+
+
+Step 1: Create React App using Create React App tool
+
+        npx create-react-app react-frontend
+        cd react-frontend
+        npm start
+
+
+        commands 
+
+         npm start
+            Starts the development server.
+
+            npm run build
+                Bundles the app into static files for production.
+
+            npm test
+                Starts the test runner.
+
+            npm run eject
+                Removes this tool and copies build dependencies, configuration files
+                and scripts into the app directory. If you do this, you can’t go back!
+
+Step 2:Adding Bootstrap in React using NPM
+
+    npm install bootstrap --save
+
+    Add below in index.js file
+    import 'bootstrap/dist/css/bootstrap.min.css';
+
+Step 3: Connecting React App with API-Gateway(REST API Call)
+    We will use axios third party library to call Rest API
+
+    install axios library. Below command will install axios in node_module folder. Also make entry in package.json file
+        npm install axios --save
+
+    create service folder in src. in service folder create EmployeeService.js
+            import axios from 'axios'
+            const EMPLOYEE_SERVICE_BASE_URL = "https://localhost:9191/api/employees";
+            const EMPLOYEE_ID = 2;
+            class EmployeeService{
+                getEmployee(){
+                    return axios.get(EMPLOYEE_SERVICE_BASE_URL + '/' + EMPLOYEE_ID);
+                }
+            }
+            export default new EmployeeService
+
+Step 4: Develop a React Component to Display user, Department and Organization Details
+    create folder component in src folder. Create EmployeeComponent.js in component folder
+
+    install Reactjs code snippets extension in vs code
+    open EmployeeComponent.js and type rcc . It will generate react class component skelton
+
+        import React, { Component } from 'react';
+        import EmployeeService from '../service/EmployeeService';
+
+        class EmployeeComponent extends Component {
+
+            constructor(props) {
+                super(props);
+                this.state = {
+                    employee: {},
+                    department: {},
+                    organization: {}
+                }
+            }
+            componentDidMount(){
+                EmployeeService.getEmployee().then((response) =>{
+                    this.setState({employee : response.data.employee})
+                    this.setState({department : response.data.department})
+                    this.setState({organization : response.data.organization})
+                    console.log(this.state.employee)
+                    console.log(this.state.department)
+                    console.log(this.state.organization)
+                })
+            }
+            
+            render() {
+                return (
+                    <div>
+                        
+                    </div>
+                );
+            }
+        }
+
+        export default EmployeeComponent;
+
+Step 5: Design the page to Display User, Department and Organization Details
