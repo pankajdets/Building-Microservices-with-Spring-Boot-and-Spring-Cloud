@@ -62,6 +62,9 @@ topic demo
 
 Step 1: Create and Setup Spring Boot Project
 
+![image](https://user-images.githubusercontent.com/42623098/235531989-55562af4-0899-4a99-8bd7-3020b1c76841.png)
+
+
 Step 2: Configure Kafka Producer and Consumer
     Spring Boot Provide auto configuartion to configure kafka producer and consumer
 
