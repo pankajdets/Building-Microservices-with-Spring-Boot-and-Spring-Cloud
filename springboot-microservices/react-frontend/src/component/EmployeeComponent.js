@@ -29,37 +29,37 @@ class EmployeeComponent extends Component {
                     <h3 className='text-center card-header'>View Employee Details</h3>
                     <div className='card-body'>
                         <div className='row'>
-                            <p><strong>Employee First Name:</strong>{this.state.employee.firstName}</p>
+                            <p><strong>Employee First Name: </strong>{this.state.employee.firstName}</p>
                         </div>
                         <div className='row'>
-                            <p><strong>Employee Last Name:</strong>{this.state.employee.lastName}</p>
+                            <p><strong>Employee Last Name: </strong>{this.state.employee.lastName}</p>
                         </div>
                         <div className='row'>
-                            <p><strong>Employee Email:</strong>{this.state.employee.email}</p>
+                            <p><strong>Employee Email: </strong>{this.state.employee.email}</p>
                         </div>
                     </div>
                     <h3 className='text-center card-header'>View Department Details</h3>
                     <div className='card-body'>
                         <div className='row'>
-                                <p><strong>Department Name:</strong>{this.state.department.departmentName}</p>
+                                <p><strong>Department Name: </strong>{this.state.department.departmentName}</p>
                         </div>
                         <div className='row'>
-                                <p><strong>Department Description:</strong>{this.state.department.departmentDescription}</p>
+                                <p><strong>Department Description: </strong>{this.state.department.departmentDescription}</p>
                         </div>
                         <div className='row'>
-                                <p><strong>Department Code:</strong>{this.state.department.departmentCode}</p>
+                                <p><strong>Department Code: </strong>{this.state.department.departmentCode}</p>
                         </div>
                     </div>
                     <h3 className='text-center card-header'>View organization Details</h3>
                     <div className='card-body'>
                         <div className='row'>
-                                <p><strong>organization Name:</strong>{this.state.organization.organizationName}</p>
+                                <p><strong>organization Name: </strong>{this.state.organization.organizationName}</p>
                         </div>
                         <div className='row'>
-                                <p><strong>organization Description:</strong>{this.state.department.organizationDescription}</p>
+                                <p><strong>organization Description: </strong>{this.state.organization.organizationDescription}</p>
                         </div>
                         <div className='row'>
-                                <p><strong>Organization Code:</strong>{this.state.organization.organizationCode}</p>
+                                <p><strong>Organization Code: </strong>{this.state.organization.organizationCode}</p>
                         </div>
                     </div>
                 </div>

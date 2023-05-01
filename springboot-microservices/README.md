@@ -1155,3 +1155,11 @@ Step 4: Develop a React Component to Display user, Department and Organization D
         export default EmployeeComponent;
 
 Step 5: Design the page to Display User, Department and Organization Details
+        implement render() method and componentDidMount() method in EmployeeComponent.js
+
+######################################################################################################
+
+**Generate Rest API Documentation for Department-Service**
+
+
+
