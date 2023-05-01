@@ -1163,6 +1163,93 @@ Step 5: Design the page to Display User, Department and Organization Details
 ######################################################################################################
 
 **Generate Rest API Documentation for Department-Service**
+REST API Documentation for Department Service Using SpringDoc Open API library
+Development Steps
 
+
+Strp 1: Adding springdoc-openapi Maven dependency
+        <!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+
+    http://localhost:8082/swagger-ui/index.html
+
+    To get in json format
+
+    http://localhost:8082/v3/api-docs
+
+Step 2: Define General API Information using Annotation
+    Annotate depart-service entry point class with below
+
+            @OpenAPIDefinition(
+            info = @Info(
+                title = "Department-Service REST API",
+                description = "Department-Service REST API Documentation",
+                version = "v1.0",
+                contact = @Contact(
+                    name = "Pankaj",
+                    email = "pankajdets@gmail.com",
+                    url = "https://linkedin.com/in/pankajdets"
+                ),
+                license = @License(
+                    name = "Apache 2.0",
+                    url = "https://linkedin.com/in/pankajdets"
+                )
+            ),
+            externalDocs = @ExternalDocumentation(
+                description = "Department-Service Doc",
+                url = "https://linkedin.com/in/pankajdets"
+            )
+        )
+
+Step 3: Customizing Swagger API Documentaion using Annotation
+
+    Annotate Controller class with 
+        @Tag(
+                name = "Department Service - DepartmentController",
+                description = "Department Controller Exposes REST API for Department-Service"
+        )
+
+    Annotate saveDepartment() method with below
+        @Operation(
+        summary = "save Department REST API",
+        description = "save Department REST API is used to save department object in a database"
+        )
+        @ApiResponse(
+            responseCode = "201",
+            description = "Http Status 201 CREATED"
+        )
+
+    Annotate getDepartment() method with below
+        @Operation(
+        summary = "get Department REST API",
+        description = "Get Department REST API is used to get department object from the database"
+        )
+        @ApiResponse(
+            responseCode = "200",
+            description = "Http Status 200 SUCCESS"
+        )
+
+Step 4: Customizing Swagger Models Documentation with Annotations(DepartmentDto)
+    Annotate DepartmentDto class with
+        @Schema(
+            description = "DepartmentDto Model Information"
+        )
+    
+    Annotate DepartmentDto class member with
+         @Schema(description = "Department Name")
+         @Schema(description = "Department Description")
+         @Schema(description = "Department Code")
+
+
+#########################################################################################################
+**Organization-Service REST API Documentation**
+    implement same way as Department-Service
+
+**Employee-Service REST API Documentation**
+    implement same way as Department-Service
 
 
