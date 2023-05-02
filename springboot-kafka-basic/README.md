@@ -153,4 +153,151 @@ Step 6: Create Kafka consumer using springboot application
                 
             }
 
+Step 7: COnfigure Kafka Producer and Consumer for JSON Serializer and Deserializer
+        update properties 
 
+        For Consumer
+        #spring.kafka.consumer.value-deserializer=org.apache.kafka.common.serialization.StringDeserializer
+        #Below property convert JSON byte[] to java object
+        spring.kafka.consumer.value-deserializer=org.springframework.kafka.support.serializer.JsonDeserializer
+        #Kafka Consumer can deserialize all the classes from this package
+        spring.kafka.consumer.properties.spring.json.trusted.packages=*
+
+        For Producer
+        #spring.kafka.producer.value-serializer=org.apache.kafka.common.serialization.StringSerializer
+        #this producer will convert java object to json and write to kafka topic
+        spring.kafka.producer.value-serializer=org.springframework.kafka.support.serializer.JsonSerializer
+
+        Create Simple POJO calss to Serialize/Deserialize
+        -We are going to create User class
+        -We will send and recive User object to and from Apache Kafka topic
+        -We will use Sping Kafka provided a JsonSerialier and JsonDesrializer which we can use ton convert java objects to and from JSON
+
+        Created payload package and and created User.java
+
+                public class User {
+                private int id;
+                private String firstName;
+                private String lastName;
+                public int getId() {
+                    return id;
+                }
+                public String getFirstName() {
+                    return firstName;
+                }
+                public String getLastName() {
+                    return lastName;
+                }
+                public void setId(int id) {
+                    this.id = id;
+                }
+                public void setFirstName(String firstName) {
+                    this.firstName = firstName;
+                }
+                public void setLastName(String lastName) {
+                    this.lastName = lastName;
+                }
+                @Override
+                public String toString() {
+                    return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + "]";
+                }
+            }
+
+Step 8: Create Kafka Producer to produce json message in kafka topic
+        Create new java class JsonKafkaProducer.java in kafka package 
+
+        @Service
+        public class JsonKafkaProducer {
+
+            private static final Logger LOGGER = LoggerFactory.getLogger(JsonKafkaProducer.class);
+
+            private KafkaTemplate<String, User> kafkaTemplate;
+
+            //Constructor for constructor based dependency injection
+            public JsonKafkaProducer(KafkaTemplate<String, User> kafkaTemplate) {
+                this.kafkaTemplate = kafkaTemplate;
+            }
+
+            public void sendMessage(User data){
+                LOGGER.info(String.format("Message sent -> %s", data.toString()));
+                Message<User> message = MessageBuilder.withPayload(data)
+                                        .setHeader(KafkaHeaders.TOPIC, "myNewTopic")
+                                        .build();
+                
+                kafkaTemplate.send(message);
+            }    
+        }
+
+
+Step 9: Create REST API to send json object to KAFKA TOPIC
+    Create JsonMessageController.java in controller package
+
+        @RestController
+        @RequestMapping("/api/v1/kafka")
+        public class JsonMessageController {
+            private JsonKafkaProducer jsonKafkaProducer;
+
+            public JsonMessageController(JsonKafkaProducer jsonKafkaProducer) {
+                this.jsonKafkaProducer = jsonKafkaProducer;
+            }
+
+            @PostMapping("/publish")
+            public ResponseEntity<String> publish(@RequestBody User user){
+                jsonKafkaProducer.sendMessage(user);
+                return ResponseEntity.ok("JSON Message Sent to Kafka Topic");
+            }
+        }
+
+    Create new Kafka Topic for JSON data 
+
+        config/KafkaTopicConfig.java
+                @Bean
+                public NewTopic createKafkaJsonTopic(){
+                    return TopicBuilder.name("myNewTopic_json")
+                                        .build();
+                }
+                
+        Refactot sendMessage() method to use new kafka
+        topic
+    
+                public void sendMessage(User data){
+                LOGGER.info(String.format("Message sent -> %s", data.toString()));
+                Message<User> message = MessageBuilder.withPayload(data)
+                                        .setHeader(KafkaHeaders.TOPIC, "myNewTopic_json")
+                                        .build();
+                
+                kafkaTemplate.send(message);
+                }
+
+Step 10: kafka Consumer to consume JSON message
+        create JsonKafkaConsumer.java file in kafka package
+
+            @Service
+            public class JsonKafkaConsumer {
+                
+                private static final Logger LOGGER = LoggerFactory.getLogger(JsonKafkaConsumer.class);
+                
+                //Spring kafka provided JsonDeserializer will convert User JSON object into Java User object
+                @KafkaListener(topics = "myNewTopic_json", groupId = "myGroup")
+                public void consume(User user){
+                    LOGGER.info(String.format("json message received -> %s", user.toString()));
+                }
+            }
+
+
+Step 11: Refactor Code to Externalize The Topic Name- Remove Hard Coded Values(Topic Names)
+
+Externalize Topic name and Group Id
+
+        Add topic name in properties file
+        spring.kafka.topic.name=myNewTopic
+
+
+    //and fetch value and use
+    //to fetch the json topic name from properties file
+    @Value("${spring.kafka.topic-json.name}")
+    private String topicJsonName;
+
+
+
+###############################################################################################################################
