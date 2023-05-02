@@ -155,6 +155,9 @@ Step 6: Create Kafka consumer using springboot application
 
 Step 7: COnfigure Kafka Producer and Consumer for JSON Serializer and Deserializer
         update properties 
+        
+![k11](https://user-images.githubusercontent.com/42623098/235624918-505693a6-9b45-4f1c-8f40-0eb33f6dd893.jpg)
+        
 
         For Consumer
         #spring.kafka.consumer.value-deserializer=org.apache.kafka.common.serialization.StringDeserializer
