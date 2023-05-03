@@ -5,10 +5,13 @@ We will read huge amout of real time data from wikimedia to the database
 Kafka Producer: Will read real time stream data from wikimedia-, then  itw ill write the data to kafka broker 
 Kafka Consumer: Will consume real time stream data from kafka broker, then it will write to the database
 
+![w2](https://user-images.githubusercontent.com/42623098/236042725-aca354a8-6fcd-4020-af6d-9904a6a028da.jpg)
+
 
 https://stream.wikimedia.org/v2/stream/recentchange
 This REST API retrieve the changes done by users
 
+![w1](https://user-images.githubusercontent.com/42623098/236042797-f429f8fc-ba00-4445-81cf-f567669e9605.jpg)
 
 Step 1: 
 Create Multi module maven project (springboot-kafka-wikimedia-data-processing) with two sub projects (kafka-producer-wikimedia) and (kafka-consumer-database)
