@@ -1,6 +1,20 @@
 ################## Event Driven Microservices sung SpringBoot and Kafka #######################
 -Asynchronous microservice communication using Kafka
 
+
+![e1](https://user-images.githubusercontent.com/42623098/236069853-23452f2a-18e7-47cc-9a90-41bc31a90e5c.jpg)
+
+
+![e2](https://user-images.githubusercontent.com/42623098/236069989-f65c1cca-4de8-4e21-be01-257653acac5e.jpg)
+
+
+
+![e3](https://user-images.githubusercontent.com/42623098/236070086-a4dbed5a-bafa-4b48-a260-3b57f138b971.jpg)
+
+
+![e4](https://user-images.githubusercontent.com/42623098/236070255-798022ae-1419-479f-954d-70ee8091bf4f.jpg)
+
+
 Step 1: Create 4 microservices order-service, stock-service, email-service and base-domains
 
 -In  order-service, stock-service & email-service
@@ -126,6 +140,11 @@ Step 4: order-service microservice- Create REST API to send order and test Kafka
 After hiting REST API(POST) it is sending OrderEvent in kafaka broker
 
 Step 5: stock-service microservice- Configure kafka Consumer
+
+
+![e5](https://user-images.githubusercontent.com/42623098/236070681-bf6806db-fb2b-4056-b5d3-f06cebbb586e.jpg)
+
+
                 spring.kafka.consumer.bootstrap-servers=localhost:9092
                 #Whenever multiple consumers consuming message from Single kafka topics make sure to assign different group to these consumers
                 spring.kafka.consumer.group-id=stock
